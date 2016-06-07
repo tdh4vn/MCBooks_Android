@@ -45,35 +45,40 @@
             android:layout_width="match_parent"
             android:layout_height="50dp">
             <ImageButton
+                android:id="@+id/btn_home"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_home_white_24px"
-                android:background="@android:color/transparent"/>
+                android:background="@drawable/button_bottom_background"/>
             <ImageButton
+                android:id="@+id/btn_gift"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_card_giftcard_white_24px"
-                android:background="@android:color/transparent"/>
+                android:background="@drawable/button_bottom_background"/>
             <ImageButton
+                android:id="@+id/btn_QR"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:src="@mipmap/ic_qr_white"
                 android:background="@color/colorQRBackground"/>
             <ImageButton
+                android:id="@+id/btn_favarite"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_favorite_white_24px"
-                android:background="@android:color/transparent"/>
+                android:background="@drawable/button_bottom_background"/>
             <ImageButton
+                android:id="@+id/btn_profile"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_account_circle_white_24px"
-                android:background="@android:color/transparent"/>
+                android:background="@drawable/button_bottom_background"/>
         </LinearLayout>
     </LinearLayout>
 

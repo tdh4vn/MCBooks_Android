@@ -4,4 +4,6 @@
     <color name="colorPrimaryDark">#0173bc</color>
     <color name="colorAccent">#FF4081</color>
     <color name="colorQRBackground">#108edf</color>
+    <color name="colorSelected">#004d7e</color>
+    <color name="colorNormal">#0173bc</color>
 </resources>

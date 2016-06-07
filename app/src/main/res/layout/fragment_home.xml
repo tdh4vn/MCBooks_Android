@@ -1,13 +1,75 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="vn.mcbooks.mcbooks.fragment.HomeFragment">
-
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp">
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:id="@+id/listAd">
+            </android.support.v7.widget.RecyclerView>
 
-</FrameLayout>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@id/listAd"
+                android:id="@+id/txtNewHotBooks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="New + Hot Books"/>
+            <Button
+                android:layout_alignBaseline="@id/txtNewHotBooks"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp"
+                android:text="MORE"
+                android:layout_alignParentRight="true"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/listNews"
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/txtNewHotBooks"
+                android:layout_width="match_parent"
+                android:layout_height="150dp">
+
+            </android.support.v7.widget.RecyclerView>
+            <TextView
+                android:layout_marginTop="5dp"
+                android:id="@+id/txtNews"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@id/listNews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:text="News"/>
+            <Button
+                android:layout_alignBaseline="@id/txtNews"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/colorPrimary"
+                android:textSize="12sp"
+                android:text="MORE"
+                android:layout_alignParentRight="true"
+                style="@style/Widget.AppCompat.Button.Borderless"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginTop="5dp"
+                android:layout_below="@id/txtNews"
+                android:layout_width="match_parent"
+                android:layout_height="150dp"></android.support.v7.widget.RecyclerView>
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

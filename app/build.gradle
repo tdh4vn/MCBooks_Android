@@ -32,4 +32,7 @@ dependencies {
     compile 'com.android.support:design:23.4.0'
     compile 'com.lapism:searchview:3.0.2'
     compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.7.5'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }

@@ -7,4 +7,5 @@ import vn.mcbooks.mcbooks.fragment.BaseFragment;
  */
 public interface IOpenFragment {
     void openFragment(BaseFragment fragment, boolean onBackstack);
+    void openDialogFragment(BaseFragment fragment);
 }

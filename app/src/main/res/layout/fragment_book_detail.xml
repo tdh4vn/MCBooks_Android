@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <include
+            android:id="@+id/header"
+            layout="@layout/fragment_book_detail_header" />
+        <LinearLayout
+            android:id="@+id/tmp_buttons"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <Button
+                android:layout_marginBottom="2dp"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:text="MUA SÁCH"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/background_blue"/>
+            <LinearLayout
+                android:layout_marginTop="2dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+                <Button
+                    android:layout_marginRight="2dp"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Video clip"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
+                    android:background="@drawable/button_stoke"/>
+                <Button
+                    android:layout_marginLeft="2dp"
+                    android:textColor="@color/colorPrimary"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:text="Yêu thích"
+                    android:textAllCaps="false"
+                    android:textStyle="bold"
+                    android:background="@drawable/button_stoke"/>
+            </LinearLayout>
+        </LinearLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Thông tin sản phẩm"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn.
+\nĐể đáp ứng nhu cầu có công cụ đối chiếu 2 ngôn ngữ Trung - Việt, MCBooks - chuyến sách ngoại ngữ -  đã dày công biên soạn bộ Sổ tay từ vựng tiếng Trung với 3 trình độ A-B-C (từ dễ tới khó) nhằm giúp bạn đọc dễ học và dễ phân chia theo trình độ học của bản thân."
+                android:freezesText="true"/>
+        </LinearLayout>
+        <include
+            layout="@layout/fragment_comment"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent" />
+    </LinearLayout>
+
+</ScrollView>

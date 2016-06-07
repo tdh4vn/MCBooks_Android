@@ -38,7 +38,7 @@
             android:paddingBottom="12dp"
             android:paddingLeft="15dp"
             android:background="@drawable/facebook_button_bg"
-            facebook:com_facebook_login_text="Log in with Facebook"/>
+            facebook:com_facebook_login_text="@string/login_with_facebook"/>
         <com.google.android.gms.common.SignInButton
             android:layout_marginBottom="24dp"
             android:layout_marginTop="12dp"

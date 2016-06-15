@@ -55,6 +55,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.model.LoginSocialResult;
+import vn.mcbooks.mcbooks.model.Result;
 import vn.mcbooks.mcbooks.model.User;
 import vn.mcbooks.mcbooks.network_api.APIURL;
 import vn.mcbooks.mcbooks.network_api.LoginSocialService;
@@ -72,11 +73,12 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     public static String KEY_LOGIN_TYPE = "KEY_LOGIN_TYPE";
     public static String FACEBOOK_TYPE = "FACE_BOOK";
     public static String GOOGLE_TYPE = "GOOGLE";
+    public static String DATA = "DATA";
 
 
 
 
-
+    private Result loginResultData;
     private LoginButton loginFacebookButton;
     private CallbackManager callbackManager;
     private AccessTokenTracker accessTokenTracker;
@@ -90,9 +92,15 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     @Override
     protected void onStart() {
         super.onStart();
+        loginResultData = new Result();
         boolean isLogin = getSharedPreferences(LOGIN_SHARE_PREFERENCE, MODE_PRIVATE).getBoolean(KEY_ISLOGIN, false);
         if (isLogin){
-            loginSuccess();
+            Intent intent = new Intent(this, HomeActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable(DATA, null);
+            intent.putExtras(bundle);
+            startActivity(intent);
+            this.finish();;
         }
 
     }
@@ -203,7 +211,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
             call.enqueue(new Callback<LoginSocialResult>() {
                 @Override
                 public void onResponse(Call<LoginSocialResult> call, Response<LoginSocialResult> response) {
-                    if (response.body().code == 1){
+                    if (response.body().getCode() == 1){
                         SharedPreferences sharedPreferences = getSharedPreferences(LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean(KEY_ISLOGIN, true);
@@ -212,8 +220,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         editor.putString(KEY_AVATAR, avatar);
                         editor.putString(KEY_ID, id);
                         editor.putString(KEY_LOGIN_TYPE, FACEBOOK_TYPE);
-                        editor.putString(KEY_TOKEN, response.body().result.accessToken);
+                        editor.putString(KEY_TOKEN, response.body().getResult().getAccessToken());
                         editor.apply();
+                        loginResultData = response.body().getResult();
                         loginSuccess();
                     } else {
                         Toast.makeText(getApplicationContext(), response.message(), Toast.LENGTH_LONG).show();
@@ -231,7 +240,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
             call.enqueue(new Callback<LoginSocialResult>() {
                 @Override
                 public void onResponse(Call<LoginSocialResult> call, Response<LoginSocialResult> response) {
-                    if (response.body().code == 1){
+                    if (response.body().getCode() == 1){
                         SharedPreferences sharedPreferences = getSharedPreferences(LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putBoolean(KEY_ISLOGIN, true);
@@ -240,8 +249,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         editor.putString(KEY_AVATAR, avatar);
                         editor.putString(KEY_ID, id);
                         editor.putString(KEY_LOGIN_TYPE, GOOGLE_TYPE);
-                        editor.putString(KEY_TOKEN, response.body().result.accessToken);
+                        editor.putString(KEY_TOKEN, response.body().getResult().getAccessToken());
                         editor.apply();
+                        loginResultData = response.body().getResult();
                         loginSuccess();
                     } else {
                         Toast.makeText(getApplicationContext(), response.message(), Toast.LENGTH_LONG).show();
@@ -258,6 +268,9 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
 
     private void loginSuccess(){
         Intent intent = new Intent(this, HomeActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(DATA, loginResultData);
+        intent.putExtras(bundle);
         startActivity(intent);
         this.finish();
     }

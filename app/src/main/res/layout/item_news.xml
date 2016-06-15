@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
+    android:paddingRight="5dp"
+    android:paddingLeft="5dp"
+    android:paddingTop="5dp">
+    <ImageView
+        android:layout_marginTop="5dp"
+        android:id="@+id/thumbnail"
+        android:layout_width="100dp"
+        android:layout_height="100dp" />
+    <TextView
+        android:id="@+id/title"
+        android:layout_marginLeft="5dp"
+        android:textSize="12sp"
+        android:textStyle="bold"
+        android:layout_toEndOf="@id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="MCBooks kí kết hợp đồng bản quyền với Ms Hoa TOEIC"/>
+    <TextView
+        android:layout_above="@+id/btnDetail"
+        android:layout_marginLeft="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/description"
+        android:textSize="12sp"
+        android:layout_below="@id/title"
+        android:layout_toEndOf="@id/thumbnail"
+        android:freezesText="true"
+        android:text="Sáng 16/5, công ty cổ phần sách MCBooks đã chính thức ký kết hợp đồng bản quyền với một trong những giáo viên nổi tiếng nhất cả nước: Ms Hoa"/>
+    <Button
+        android:padding="-10dp"
+        android:id="@id/btnDetail"
+        android:layout_width="60dp"
+        android:layout_height="36dp"
+        style="@style/Base.Widget.AppCompat.Button.Borderless"
+        android:text="Chi tiết"
+        android:textSize="12sp"
+        android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"/>
+</RelativeLayout>

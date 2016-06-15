@@ -2,9 +2,10 @@
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:cardview="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:layout_width="150dp"
-    android:layout_height="220dp"
-    cardview:cardCornerRadius="5dp">
+    android:layout_width="120dp"
+    android:layout_height="200dp"
+    android:layout_margin="5dp"
+    cardview:cardCornerRadius="2dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -12,34 +13,47 @@
             android:id="@+id/iconBook"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="10dp"
-            android:layout_width="130dp"
-            android:layout_height="130dp" />
+            android:layout_width="110dp"
+            android:layout_height="110dp" />
         <TextView
             android:id="@+id/nameBook"
             android:layout_marginTop="5dp"
             android:layout_below="@id/iconBook"
-            android:layout_marginRight="20dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:textSize="12sp"
             android:layout_marginBottom="2dp"
             android:text="Từ điển Nhật-Việt thông dụng"/>
-        <RatingBar
-            android:id="@+id/starRateBook"
-            android:layout_below="@id/nameBook"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_marginBottom="2dp"
-            android:numStars="5"
-            android:stepSize="0.1"
-            android:isIndicator="true"/>
         <TextView
+            android:id="@+id/ratingStar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="5dp"
+            android:text="5.0"/>
+        <ImageView
+            android:layout_alignTop="@id/ratingStar"
+            android:layout_marginBottom="5dp"
+            android:layout_alignParentBottom="true"
+            android:layout_toEndOf="@id/ratingStar"
+            android:layout_width="10dp"
+            android:layout_marginLeft="2dp"
+            android:layout_height="10dp"
+            android:src="@drawable/ic_grade_black_18px"/>
+        <TextView
+            android:layout_alignBaseline="@id/ratingStar"
             android:id="@+id/txtPriceBook"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="150.000d"
+            android:layout_marginRight="5dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:textSize="13sp"
             android:textColor="@android:color/holo_blue_light"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"/>

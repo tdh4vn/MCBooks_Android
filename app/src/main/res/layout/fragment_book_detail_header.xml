@@ -1,34 +1,42 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="250dp"
-    tools:context="vn.mcbooks.mcbooks.fragment.BookDetailHeader">
+    android:layout_height="250dp">
     <RelativeLayout
         android:padding="10dp"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent">
         <ImageView
+            android:id="@+id/iconBook"
             android:layout_centerHorizontal="true"
             android:layout_width="150dp"
             android:layout_height="180dp" />
         <Button
             android:id="@+id/btnRead"
-            android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
-            android:layout_width="150dp"
+            android:layout_width="120dp"
             android:layout_height="36dp"
             android:textAllCaps="false"
             android:text="Đọc thử"
-            android:drawablePadding="-30dp"
-            android:paddingLeft="20dp"
+            android:paddingLeft="15dp"
             android:textColor="@android:color/holo_blue_dark"
             android:drawableLeft="@drawable/open_magazine"
             android:background="@drawable/button_stoke"/>
+
+        <ImageButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/favorite_stroke"
+            android:id="@+id/favorite"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
+            android:layout_alignParentBottom="true" />
+
     </RelativeLayout>
     <RelativeLayout
-        android:padding="10dp"
+        android:padding="5dp"
         android:layout_width="0dp"
         android:layout_weight="1"
         android:layout_height="match_parent">
@@ -37,6 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAlignment="center"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:text="Hướng dẫn ôn tập và kiểm tra Tiếng Anh lớp 7 - Tập 2"/>
         <TextView
@@ -48,23 +57,31 @@
             android:layout_height="wrap_content"
             android:textSize="12sp"
             android:text="NXB: Đại Học Quốc Gia Hà Nội\nTác giả: The Windy\nSố trang: 136\nKích thước: 17 x 24cm"/>
-        <RatingBar
+        <TextView
             android:id="@+id/ratingStar"
             android:layout_marginTop="5dp"
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
+            android:text="5.0"
+            android:textSize="12sp"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
             android:layout_height="wrap_content"
-            style="?android:attr/ratingBarStyleSmall"
-            android:numStars="5"
-            android:layout_below="@id/shortDetail"/>
+            android:layout_marginBottom="10dp"/>
+        <ImageView
+            android:id="@+id/tmp_starIcon"
+            android:layout_alignTop="@id/ratingStar"
+            android:layout_marginBottom="5dp"
+            android:layout_toEndOf="@id/ratingStar"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:src="@drawable/ic_grade_black_18px"/>
         <TextView
             android:id="@+id/price"
-            android:layout_marginTop="10dp"
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="38.000d"
-            android:textSize="16sp"
+            android:textSize="18sp"
+            android:layout_alignParentRight="true"
             android:textStyle="bold"
             android:paddingTop="5dp"
             android:paddingBottom="5dp"
@@ -72,20 +89,18 @@
             android:paddingRight="20dp"
             android:background="@drawable/background_border"
             android:textColor="@android:color/holo_blue_dark"
-            android:layout_below="@id/ratingStar"/>
-        <Button
+            android:layout_alignBaseline="@id/ratingStar"/>
+        <ImageButton
+            android:layout_toEndOf="@id/tmp_starIcon"
+            android:layout_toStartOf="@id/price"
             android:layout_alignParentBottom="true"
-            android:drawableLeft="@drawable/gift"
-            android:layout_below="@id/price"
+            android:layout_marginBottom="8dp"
+            android:id="@+id/btnSaleOffs"
+            android:src="@drawable/gift"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Khuyến Mãi"
-            android:textStyle="bold"
-            android:textColor="@android:color/holo_red_light"
             android:layout_centerHorizontal="true"
-            android:drawablePadding="20dp"
-            android:background="@android:color/transparent"
-            android:scaleY="?android:borderlessButtonStyle"/>
+            android:background="@android:color/transparent" />
     </RelativeLayout>
 
 </LinearLayout>

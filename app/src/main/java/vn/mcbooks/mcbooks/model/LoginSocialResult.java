@@ -10,14 +10,28 @@ import java.util.List;
 
 
 public class LoginSocialResult {
-
     @SerializedName("code")
     @Expose
-    public Integer code;
+    private Integer code;
     @SerializedName("result")
     @Expose
-    public Result result;
+    private Result result;
 
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public Result getResult() {
+        return result;
+    }
+
+    public void setResult(Result result) {
+        this.result = result;
+    }
 }
 
 

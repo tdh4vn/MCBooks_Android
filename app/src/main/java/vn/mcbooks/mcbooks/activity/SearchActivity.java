@@ -33,7 +33,6 @@ public class SearchActivity extends AppCompatActivity
         switch (v.getId()){
             case R.id.back_button:
                 this.finish();
-
                 break;
             default:
                 break;

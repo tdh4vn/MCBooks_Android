@@ -3,6 +3,8 @@
     package="vn.mcbooks.mcbooks">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:name=".application.MCBooksApplication"
@@ -24,19 +26,21 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".activity.HomeActivity"
             android:label="@string/title_activity_home"
-            android:theme="@style/AppTheme.NoTitle">
-
-
-        </activity>
-        <activity android:name=".activity.SearchActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-
-        </activity>
+            android:theme="@style/AppTheme.NoTitle" />
+        <activity
+            android:name=".activity.SearchActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activity.MediaPlayerActivity"
+            android:label="@string/title_activity_media_player"
+            android:theme="@style/AppTheme.NoTitle"></activity>
+        <activity
+            android:name=".activity.ShowImageActivity"
+            android:label="@string/title_activity_show_image"></activity>
     </application>
 
 </manifest>

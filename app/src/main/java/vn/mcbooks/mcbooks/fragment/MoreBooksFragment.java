@@ -12,10 +12,10 @@ import vn.mcbooks.mcbooks.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class CommentFragment extends Fragment {
+public class MoreBooksFragment extends BaseFragment {
 
 
-    public CommentFragment() {
+    public MoreBooksFragment() {
         // Required empty public constructor
     }
 
@@ -24,7 +24,7 @@ public class CommentFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_comment, container, false);
+        return inflater.inflate(R.layout.fragment_more_books, container, false);
     }
 
 }

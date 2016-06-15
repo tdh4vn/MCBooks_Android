@@ -1,9 +1,15 @@
 package vn.mcbooks.mcbooks.activity;
 
+
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -35,9 +41,15 @@ import vn.mcbooks.mcbooks.fragment.HomeFragment;
 import vn.mcbooks.mcbooks.fragment.ProfileFragment;
 import vn.mcbooks.mcbooks.image_helper.CircleTransform;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
+import vn.mcbooks.mcbooks.model.GetBookResult;
+import vn.mcbooks.mcbooks.model.LoginSocialResult;
 import vn.mcbooks.mcbooks.model.LogoutSocialResult;
+import vn.mcbooks.mcbooks.model.Result;
+import vn.mcbooks.mcbooks.network_api.GetBookService;
 import vn.mcbooks.mcbooks.network_api.LogoutSocialService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
+import vn.mcbooks.mcbooks.singleton.ListBooksSingleton;
+import vn.mcbooks.mcbooks.utils.StringUtils;
 
 public class HomeActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -58,25 +70,129 @@ public class HomeActivity extends BaseActivity
     private ImageButton btnFavarite;
     private ImageButton btnProfile;
 
+    //------Data-----
+    private Result loginDataResult;
+    private boolean isReady = false;
+    private boolean newBooksReady = false;
+    private boolean hotBooksReady = false;
+    private boolean comingBooksReady = false;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+        loginDataResult = (Result) getIntent().getExtras().getSerializable(LoginActivity.DATA);
+        if (loginDataResult == null){
+            loadBooks();
+            Log.d("HUNGTD1","OK");
+        } else {
+            Log.d("HUNGTD3","OK");
+            HomeFragment homeFragment = new HomeFragment();
+            homeFragment.setDataLoginResult(loginDataResult);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, homeFragment)
+                    .addToBackStack(HomeFragment.NAME)
+                    .commit();
+            isReady = true;
+            newBooksReady = true;
+            hotBooksReady = true;
+            comingBooksReady = true;
+        }
+        ListBooksSingleton.getInstance().setResult(loginDataResult);
         initNavigationView();
+        if (!isReady){
+            progressDialog=new ProgressDialog(this);
+            progressDialog.setMessage("Đang tải....");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
     }
 
     private void initView(){
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, new HomeFragment())
-                .addToBackStack(HomeFragment.NAME)
-                .commit();
+
         initBottomControl();
         View headerView = navigationView.getHeaderView(0);
         imgAvatar = (ImageView) headerView.findViewById(R.id.img_avatar);
         txtName = (TextView) headerView.findViewById(R.id.txt_name);
         txtEmail = (TextView) headerView.findViewById(R.id.txt_email);
         initMenuHeader();
+    }
+
+    private void loadBooks(){
+        GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
+        token = sharedPreferences.getString(LoginActivity.KEY_TOKEN, "");
+        loginDataResult = new Result();
+        Call<GetBookResult> getHotBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), "hot", 1);
+        getHotBookServiceCall.enqueue(new Callback<GetBookResult>() {
+            @Override
+            public void onResponse(Call<GetBookResult> call, Response<GetBookResult> response) {
+                loginDataResult.setHotBooks(response.body().getResult());
+                hotBooksReady = true;
+                if (hotBooksReady && newBooksReady && comingBooksReady && progressDialog != null){
+                    isReady = true;
+                    HomeFragment homeFragment = new HomeFragment();
+                    homeFragment.setDataLoginResult(loginDataResult);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, homeFragment)
+                            .addToBackStack(HomeFragment.NAME)
+                            .commit();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBookResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+            }
+        });
+        Call<GetBookResult> getNewBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), "new", 1);
+        getNewBookServiceCall.enqueue(new Callback<GetBookResult>() {
+            @Override
+            public void onResponse(Call<GetBookResult> call, Response<GetBookResult> response) {
+                loginDataResult.setNewBooks(response.body().getResult());
+                newBooksReady = true;
+                if (hotBooksReady && newBooksReady && comingBooksReady && progressDialog != null){
+                    isReady = true;
+                    HomeFragment homeFragment = new HomeFragment();
+                    homeFragment.setDataLoginResult(loginDataResult);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, homeFragment)
+                            .addToBackStack(HomeFragment.NAME)
+                            .commit();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBookResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+            }
+        });
+        Call<GetBookResult> getComingBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), "coming", 1);
+        getComingBookServiceCall.enqueue(new Callback<GetBookResult>() {
+            @Override
+            public void onResponse(Call<GetBookResult> call, Response<GetBookResult> response) {
+                loginDataResult.setComingBooks(response.body().getResult());
+                comingBooksReady = true;
+                if (hotBooksReady && newBooksReady && comingBooksReady && progressDialog != null){
+                    isReady = true;
+                    HomeFragment homeFragment = new HomeFragment();
+                    homeFragment.setDataLoginResult(loginDataResult);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, homeFragment)
+                            .addToBackStack(HomeFragment.NAME)
+                            .commit();
+                    progressDialog.dismiss();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<GetBookResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(),"Có lỗi xảy ra!", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private void initMenuHeader(){
@@ -134,7 +250,14 @@ public class HomeActivity extends BaseActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            int count = getSupportFragmentManager().getBackStackEntryCount();
+
+            if (count == 0) {
+                super.onBackPressed();
+            } else {
+                getSupportFragmentManager().popBackStack();
+            }
+
         }
     }
 
@@ -204,7 +327,6 @@ public class HomeActivity extends BaseActivity
         } else {
             GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext()).addApi(Auth.GOOGLE_SIGN_IN_API).build();
             if (mGoogleApiClient.isConnected()){
-                Log.d("OKE ROI","HEHE");
                 mGoogleApiClient.disconnect();
             }
         }
@@ -287,6 +409,9 @@ public class HomeActivity extends BaseActivity
         }
     }
 
+
+
+
     @Override
     public void openFragment(BaseFragment fragment, boolean onBackstack) {
         if (onBackstack){
@@ -296,5 +421,12 @@ public class HomeActivity extends BaseActivity
         }
     }
 
-    //TODO
+    @Override
+    public void openDialogFragment(DialogFragment fragment) {
+        FragmentManager ft = getSupportFragmentManager();
+
+
+        fragment.show(ft, "dialog");
+    }
+
 }

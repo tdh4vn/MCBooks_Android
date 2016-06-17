@@ -60,6 +60,7 @@ import vn.mcbooks.mcbooks.model.User;
 import vn.mcbooks.mcbooks.network_api.APIURL;
 import vn.mcbooks.mcbooks.network_api.LoginSocialService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
+import vn.mcbooks.mcbooks.singleton.ContentManager;
 
 public class LoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener{
     //CONSTANT
@@ -115,16 +116,16 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         callbackManager = CallbackManager.Factory.create();
         initView();
     }
-    /*
-    //Kết nối các view
-     */
+
 
     @Override
     protected void onResume() {
         super.onResume();
 
     }
-
+    /*
+        //Kết nối các view
+         */
     private void initView(){
         //button login with facebook
         loginFacebookButton = (LoginButton) this.findViewById(R.id.login_facebook_button);
@@ -214,6 +215,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                     if (response.body().getCode() == 1){
                         SharedPreferences sharedPreferences = getSharedPreferences(LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
+                        ContentManager.getInstance().setToken(response.body().getResult().getAccessToken());
                         editor.putBoolean(KEY_ISLOGIN, true);
                         editor.putString(KEY_EMAIL, email);
                         editor.putString(KEY_NAME, name);

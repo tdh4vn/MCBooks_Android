@@ -32,6 +32,7 @@ import vn.mcbooks.mcbooks.model.GetBookResult;
 import vn.mcbooks.mcbooks.model.Result;
 import vn.mcbooks.mcbooks.network_api.GetBookService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
+import vn.mcbooks.mcbooks.singleton.ContentManager;
 import vn.mcbooks.mcbooks.utils.EndlessRecyclerViewScrollListener;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
@@ -51,7 +52,18 @@ public class MoreBooksFragment extends BaseFragment{
 
     ProgressDialog progressDialog;
 
-    private String bookType;
+    private String bookType = "null";
+
+    private String idCategory = "null";
+
+    public String getIdCategory() {
+        return idCategory;
+    }
+
+    public void setIdCategory(String idCategory) {
+        this.setBookType("null");
+        this.idCategory = idCategory;
+    }
 
     private RecyclerView listBooks;
 
@@ -61,17 +73,14 @@ public class MoreBooksFragment extends BaseFragment{
 
     public void setBookType(String bookType) {
         if (bookType.equals(HOT_BOOKS) || bookType.equals(NEW_BOOKS) || bookType.equals(COMING_BOOKS)){
+            this.setIdCategory("null");
             this.bookType = bookType;
-        } else {
-            this.bookType = "new";
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        
         View rootView = inflater.inflate(R.layout.fragment_more_books, container, false);
         initView(rootView);
         showDialogLoading();
@@ -90,29 +99,30 @@ public class MoreBooksFragment extends BaseFragment{
     }
 
     void showDialogLoading(){
-        Log.d("HungTD","abcs");
         progressDialog=new ProgressDialog(getActivity());
-
     }
 
     private void loadBooks(int page) {
         GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, getActivity().MODE_PRIVATE);
-        String token = sharedPreferences.getString(LoginActivity.KEY_TOKEN, "");
-
-        Call<GetBookResult> getBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), bookType, page);
+        String token = ContentManager.getInstance().getToken();
+        Call<GetBookResult> getBookServiceCall;
+        Log.d("MoreBook", bookType + " - " + idCategory);
+        if (!bookType.equals("null")){
+            getBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), bookType, page);
+        } else {
+            getBookServiceCall = getBookService.getBooksByCategory(StringUtils.tokenBuild(token), idCategory, page);
+        }
         getBookServiceCall.enqueue(new Callback<GetBookResult>() {
             @Override
             public void onResponse(Call<GetBookResult> call, Response<GetBookResult> response) {
-                if (progressDialog != null && response.body().getResult().size() > 0){
-                    Log.d("HungTD", pageNumber+"");
+                if (response.body().getCode() != 1){
+                    showToast(listBookResult.getMessage(), Toast.LENGTH_LONG);
+                } else if (progressDialog != null && response.body().getResult().size() > 0){
                     pageNumber++;
                     progressDialog.dismiss();
                     putDataToListView(response.body().getResult());
                 }
-                if (response.body().getCode() != 1){
-                    showToast(listBookResult.getMessage(), Toast.LENGTH_LONG);
-                }
+
             }
 
             @Override

@@ -14,4 +14,6 @@ import vn.mcbooks.mcbooks.model.GetBookResult;
 public interface GetBookService {
     @GET("api/books/{name}")
     Call<GetBookResult> getBooks(@Header("Authorization") String token, @Path("name") String name, @Query("page") int page);
+    @GET("api/categories/{category}/books")
+    Call<GetBookResult> getBooksByCategory(@Header("Authorization") String token, @Path("category") String categoryID, @Query("page") int page);
 }

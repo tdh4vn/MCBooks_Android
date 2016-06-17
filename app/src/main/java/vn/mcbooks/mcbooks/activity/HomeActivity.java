@@ -36,6 +36,7 @@ import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.fragment.BaseFragment;
 import vn.mcbooks.mcbooks.fragment.HomeFragment;
+import vn.mcbooks.mcbooks.fragment.MoreBooksFragment;
 import vn.mcbooks.mcbooks.fragment.ProfileFragment;
 import vn.mcbooks.mcbooks.image_helper.CircleTransform;
 import vn.mcbooks.mcbooks.intef.ILogout;
@@ -50,7 +51,7 @@ import vn.mcbooks.mcbooks.network_api.GetBookService;
 import vn.mcbooks.mcbooks.network_api.GetCategoriesService;
 import vn.mcbooks.mcbooks.network_api.LogoutSocialService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
-import vn.mcbooks.mcbooks.singleton.ListBooksSingleton;
+import vn.mcbooks.mcbooks.singleton.ContentManager;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
 public class HomeActivity extends BaseActivity
@@ -59,6 +60,9 @@ public class HomeActivity extends BaseActivity
                     IOpenFragment,
                     IReloadData,
                     ILogout{
+    public static final int MENU_LOGOUT = 1;
+    public static final int MENU_CALL_MCBOOKS = 2;
+
     private String token;
 
     //-----bar layout
@@ -86,6 +90,9 @@ public class HomeActivity extends BaseActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
+        token = sharedPreferences.getString(LoginActivity.KEY_TOKEN, "");
+        ContentManager.getInstance().setToken(token);
         setContentView(R.layout.activity_home);
         listDataReloadCompletedCallBack = new ArrayList<>();
         loginDataResult = (Result) getIntent().getExtras().getSerializable(LoginActivity.DATA);
@@ -103,11 +110,11 @@ public class HomeActivity extends BaseActivity
             hotBooksReady = true;
             comingBooksReady = true;
         }
-        ListBooksSingleton.getInstance().setResult(loginDataResult);
+        ContentManager.getInstance().setResult(loginDataResult);
         initNavigationView();
         if (!isReady){
             progressDialog=new ProgressDialog(this);
-            progressDialog.setMessage("Đang tải....");
+            progressDialog.setMessage("Đang tải...");
             progressDialog.setCancelable(false);
             progressDialog.show();
         }
@@ -116,17 +123,15 @@ public class HomeActivity extends BaseActivity
 
     void getCategories(){
         GetCategoriesService getCategoriesService = ServiceFactory.getInstance().createService(GetCategoriesService.class);
-        Call<GetCategoriesResult> call = getCategoriesService.getCategories(StringUtils.tokenBuild(token));
-        Log.d("HungTD", "getCategories");
+        Call<GetCategoriesResult> call = getCategoriesService.getCategories(StringUtils.tokenBuild(ContentManager.getInstance().getToken()));
         call.enqueue(new Callback<GetCategoriesResult>() {
             @Override
             public void onResponse(Call<GetCategoriesResult> call, Response<GetCategoriesResult> response) {
                 if (response.body().getCode() == 1){
                     categories = response.body().getResult();
-                    Log.d("HungTD", categories.size() + "");
                     addCategoriesToMenu();
                 } else {
-                    Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng2222.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -138,13 +143,14 @@ public class HomeActivity extends BaseActivity
     }
 
     private void addCategoriesToMenu() {
-        Log.d("HungTD", "AddCategories");
         if (navigationView != null){
             Log.d("HungTD", categories.size() + "");
             Menu menuCategories = navigationView.getMenu();
             for (int i = 0; i < categories.size(); i++){
                 menuCategories.add(R.id.categories, Menu.NONE, i, categories.get(i).getName()).setIcon(R.drawable.ic_folder_open_black_24dp);
             }
+            menuCategories.add(R.id.suport, MENU_CALL_MCBOOKS, categories.size(), "Gọi MCBooks").setIcon(R.drawable.ic_call_black_24dp);
+            menuCategories.add(R.id.suport, MENU_LOGOUT, categories.size() + 1, "Đăng xuất").setIcon(R.drawable.ic_reply_black_24dp);
         }
     }
 
@@ -178,7 +184,7 @@ public class HomeActivity extends BaseActivity
                             .addToBackStack(HomeFragment.NAME)
                             .commit();
                     progressDialog.dismiss();
-                    ListBooksSingleton.getInstance().setResult(loginDataResult);
+                    ContentManager.getInstance().setResult(loginDataResult);
                     for (ILoadDataCompleteCallBack iLoadDataCompleteCallBack : listDataReloadCompletedCallBack){
                         iLoadDataCompleteCallBack.reloadDataComplete();
                     }
@@ -205,7 +211,7 @@ public class HomeActivity extends BaseActivity
                             .addToBackStack(HomeFragment.NAME)
                             .commit();
                     progressDialog.dismiss();
-                    ListBooksSingleton.getInstance().setResult(loginDataResult);
+                    ContentManager.getInstance().setResult(loginDataResult);
                     for (ILoadDataCompleteCallBack iLoadDataCompleteCallBack : listDataReloadCompletedCallBack){
                         iLoadDataCompleteCallBack.reloadDataComplete();
                     }
@@ -232,7 +238,7 @@ public class HomeActivity extends BaseActivity
                             .addToBackStack(HomeFragment.NAME)
                             .commit();
                     progressDialog.dismiss();
-                    ListBooksSingleton.getInstance().setResult(loginDataResult);
+                    ContentManager.getInstance().setResult(loginDataResult);
                     for (ILoadDataCompleteCallBack iLoadDataCompleteCallBack : listDataReloadCompletedCallBack){
                         iLoadDataCompleteCallBack.reloadDataComplete();
                     }
@@ -302,7 +308,6 @@ public class HomeActivity extends BaseActivity
             drawer.closeDrawer(GravityCompat.START);
         } else {
             int count = getSupportFragmentManager().getBackStackEntryCount();
-
             if (count == 1) {
                 this.finish();
             } else {
@@ -314,19 +319,13 @@ public class HomeActivity extends BaseActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.home, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
             startActivity(intent);
@@ -342,10 +341,21 @@ public class HomeActivity extends BaseActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if (id == R.id.nav_share) {
+        String title = item.getTitle().toString();
+        if (id == MENU_CALL_MCBOOKS) {
 
-        } else if (id == R.id.nav_logout) {
+        } else if (id == MENU_LOGOUT) {
             logout();
+        }
+
+        for (Category category : categories){
+            if (category.getName().equals(title)){
+                MoreBooksFragment moreBooksFragment = new MoreBooksFragment();
+                Log.d("HomeActivity", category.getId());
+                moreBooksFragment.setIdCategory(category.getId());
+                openFragment(moreBooksFragment, true);
+                break;
+            }
         }
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

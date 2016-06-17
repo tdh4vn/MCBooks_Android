@@ -1,16 +1,10 @@
 package vn.mcbooks.mcbooks.fragment;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -20,9 +14,8 @@ import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.IReloadData;
 import vn.mcbooks.mcbooks.listener.RecyclerItemClickListener;
-import vn.mcbooks.mcbooks.model.LoginSocialResult;
 import vn.mcbooks.mcbooks.model.Result;
-import vn.mcbooks.mcbooks.singleton.ListBooksSingleton;
+import vn.mcbooks.mcbooks.singleton.ContentManager;
 
 
 public class HomeFragment extends BaseFragment
@@ -100,7 +93,7 @@ public class HomeFragment extends BaseFragment
         adapterForHotBookList
                 = new BookInHomeAdapter();
         if (dataLoginResult == null){
-            dataLoginResult = ListBooksSingleton.getInstance().getResult();
+            dataLoginResult = ContentManager.getInstance().getResult();
         }
         adapterForHotBookList.setmContext(getContext());
         adapterForHotBookList.setListBook(dataLoginResult.getHotBooks());
@@ -174,7 +167,7 @@ public class HomeFragment extends BaseFragment
 
     @Override
     public void reloadDataComplete() {
-        dataLoginResult = ListBooksSingleton.getInstance().getResult();
+        dataLoginResult = ContentManager.getInstance().getResult();
         adapterForHotBookList.setListBook(dataLoginResult.getHotBooks());
         adapterForHotBookList.notifyDataSetChanged();
         adapterForComingBookList.setListBook(dataLoginResult.getComingBooks());

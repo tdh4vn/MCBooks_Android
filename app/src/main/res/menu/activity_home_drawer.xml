@@ -1,21 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single" android:id="@+id/categories">
+        <group android:checkableBehavior="single" android:id="@+id/categories">
 
-    </group>
+        </group>
 
-    <item android:title="Hỗ trợ">
-        <menu>
-            <item
-                android:id="@+id/nav_share"
-                android:icon="@drawable/ic_menu_share"
-                android:title="Gọi cho MCBooks" />
-            <item
-                android:id="@+id/nav_logout"
-                android:icon="@drawable/ic_menu_send"
-                android:title="Đăng xuất" />
-        </menu>
-    </item>
 
+        <group android:checkableBehavior="single" android:id="@+id/suport">
+
+        </group>
 </menu>

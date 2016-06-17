@@ -2,11 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="vn.mcbooks.mcbooks.fragment.MyBooksFragment">
+    tools:context="vn.mcbooks.mcbooks.fragment.YoutubePlayerFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
-
-
+    <com.google.android.youtube.player.YouTubePlayerView
+        android:id="@+id/youtube_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </FrameLayout>

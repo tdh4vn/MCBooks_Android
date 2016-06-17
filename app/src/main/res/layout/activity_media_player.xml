@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="vn.mcbooks.mcbooks.activity.MediaPlayerActivity">
+    tools:context=".activity.AudioPlayerActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/app_bar"

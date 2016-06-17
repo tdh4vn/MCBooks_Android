@@ -72,12 +72,20 @@
                 android:textSize="16sp"
                 android:textStyle="bold" />
             <TextView
+                android:id="@+id/txtDescription"
                 android:layout_marginTop="10dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn.
-\nĐể đáp ứng nhu cầu có công cụ đối chiếu 2 ngôn ngữ Trung - Việt, MCBooks - chuyến sách ngoại ngữ -  đã dày công biên soạn bộ Sổ tay từ vựng tiếng Trung với 3 trình độ A-B-C (từ dễ tới khó) nhằm giúp bạn đọc dễ học và dễ phân chia theo trình độ học của bản thân."
+                android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn..."
                 android:freezesText="true"/>
+            <Button
+                android:id="@+id/btnReadMore"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xem thêm"
+                android:textColor="@color/colorPrimary"
+                style="@style/Base.Widget.AppCompat.Button.Borderless"/>
         </LinearLayout>
         <include
             layout="@layout/fragment_comment"

@@ -3,131 +3,136 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="vn.mcbooks.mcbooks.fragment.HomeFragment">
-    <ScrollView
+    <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/swipe_reload_data"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <RelativeLayout
+        android:layout_height="wrap_content">
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp">
-            <android.support.v7.widget.RecyclerView
+            android:layout_height="match_parent">
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:id="@+id/listAd">
-            </android.support.v7.widget.RecyclerView>
-            <!--Sách bán chạy-->
-            <TextView
-                android:layout_marginTop="5dp"
-                android:layout_marginLeft="5dp"
-                android:layout_below="@id/listAd"
-                android:id="@+id/bookHotSeller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:text="Sách bán chạy"/>
-            <Button
-                android:id="@+id/btnBookHotSeller"
-                android:layout_alignBaseline="@id/bookHotSeller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
-                android:text="Xem thêm"
-                android:layout_alignParentRight="true"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listBookHotSeller"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/bookHotSeller"
-                android:layout_width="match_parent"
-                android:layout_height="210dp">
+                android:layout_height="match_parent"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp">
+                <android.support.v7.widget.RecyclerView
+                    android:layout_width="match_parent"
+                    android:layout_height="150dp"
+                    android:id="@+id/listAd">
+                </android.support.v7.widget.RecyclerView>
+                <!--Sách bán chạy-->
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:layout_below="@id/listAd"
+                    android:id="@+id/bookHotSeller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:text="Sách bán chạy"/>
+                <Button
+                    android:id="@+id/btnBookHotSeller"
+                    android:layout_alignBaseline="@id/bookHotSeller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    android:text="Xem thêm"
+                    android:layout_alignParentRight="true"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/listBookHotSeller"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/bookHotSeller"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp">
 
-            </android.support.v7.widget.RecyclerView>
-            <!--Sách mới-->
-            <TextView
-                android:layout_marginTop="5dp"
-                android:id="@+id/txtBooksNew"
-                android:layout_marginLeft="5dp"
-                android:layout_below="@id/listBookHotSeller"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:text="Sách mới"/>
-            <Button
-                android:layout_alignBaseline="@id/txtBooksNew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
-                android:text="Xem thêm"
-                android:layout_alignParentRight="true"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
+                </android.support.v7.widget.RecyclerView>
+                <!--Sách mới-->
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/txtBooksNew"
+                    android:layout_marginLeft="5dp"
+                    android:layout_below="@id/listBookHotSeller"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:text="Sách mới"/>
+                <Button
+                    android:id="@+id/btnBookNew"
+                    android:layout_alignBaseline="@id/txtBooksNew"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    android:text="Xem thêm"
+                    android:layout_alignParentRight="true"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listBooksNew"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/txtBooksNew"
-                android:layout_width="match_parent"
-                android:layout_height="210dp"/>
-            <!--Sách sắp phát hành-->
-            <TextView
-                android:layout_marginTop="5dp"
-                android:id="@+id/txtBooksInRelease"
-                android:layout_marginLeft="5dp"
-                android:layout_below="@id/listBooksNew"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:text="Sách sắp phát hành"/>
-            <Button
-                android:id="@+id/btnBooksInRelease"
-                android:layout_alignBaseline="@id/txtBooksInRelease"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
-                android:text="Xem thêm"
-                android:layout_alignParentRight="true"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/listBooksNew"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/txtBooksNew"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"/>
+                <!--Sách sắp phát hành-->
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/txtBooksInRelease"
+                    android:layout_marginLeft="5dp"
+                    android:layout_below="@id/listBooksNew"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:text="Sách sắp phát hành"/>
+                <Button
+                    android:id="@+id/btnBooksInRelease"
+                    android:layout_alignBaseline="@id/txtBooksInRelease"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    android:text="Xem thêm"
+                    android:layout_alignParentRight="true"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
 
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listBooksInRelease"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/txtBooksInRelease"
-                android:layout_width="match_parent"
-                android:layout_height="210dp"/>
-            <!--Tin tức-->
-            <TextView
-                android:layout_marginTop="5dp"
-                android:id="@+id/txtNews"
-                android:layout_marginLeft="5dp"
-                android:layout_below="@id/listBooksInRelease"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textStyle="bold"
-                android:textSize="18sp"
-                android:text="Tin tức"/>
-            <Button
-                android:id="@+id/btnNews"
-                android:layout_alignBaseline="@id/txtNews"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="@color/colorPrimary"
-                android:textSize="12sp"
-                android:text="Xem thêm"
-                android:layout_alignParentRight="true"
-                style="@style/Widget.AppCompat.Button.Borderless"/>
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/listNews"
-                android:layout_marginTop="5dp"
-                android:layout_below="@id/txtNews"
-                android:layout_width="match_parent"
-                android:layout_height="210dp"/>
-        </RelativeLayout>
-    </ScrollView>
-
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/listBooksInRelease"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/txtBooksInRelease"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"/>
+                <!--Tin tức-->
+                <TextView
+                    android:layout_marginTop="5dp"
+                    android:id="@+id/txtNews"
+                    android:layout_marginLeft="5dp"
+                    android:layout_below="@id/listBooksInRelease"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:text="Tin tức"/>
+                <Button
+                    android:id="@+id/btnNews"
+                    android:layout_alignBaseline="@id/txtNews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="12sp"
+                    android:text="Xem thêm"
+                    android:layout_alignParentRight="true"
+                    style="@style/Widget.AppCompat.Button.Borderless"/>
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/listNews"
+                    android:layout_marginTop="5dp"
+                    android:layout_below="@id/txtNews"
+                    android:layout_width="match_parent"
+                    android:layout_height="210dp"/>
+            </RelativeLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
 </RelativeLayout>

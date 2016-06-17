@@ -13,12 +13,7 @@ import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-
-import org.w3c.dom.Text;
-
 import java.io.IOException;
-
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.ListMediaAdapter;
 import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
@@ -26,7 +21,7 @@ import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.utils.PlayerControl;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
-public class MediaPlayerActivity extends BaseActivity {
+public class AudioPlayerActivity extends BaseActivity {
     private static final String URL = "http://download.a2.nixcdn.com/30dbd0e79fe0450a1517731023e96d23/57610e8e/NhacCuaTui154/TinhYeuHoaGio-TruongTheVinh_353sn.mp3";
     private static final String TAG = "AudioPlayer";
     private Book mBook;
@@ -34,12 +29,12 @@ public class MediaPlayerActivity extends BaseActivity {
     private MediaPlayer mediaPlayer;
     private ListView listMedia;
     private TextView txtTileMusic;
-    private int numberMedia;
 
     //----media player controller
     private TextView txtCurrentTime;
     private TextView txtMaxTime;
     private SeekBar progressMedia;
+    private boolean isRepeatOne;
     private ImageButton playPauseButton;
     private ImageButton previousButton;
     private ImageButton nextButton;
@@ -57,15 +52,16 @@ public class MediaPlayerActivity extends BaseActivity {
         }
     };
 
+
+    private boolean isReadyPlay = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
         mBook = (Book) getIntent().getSerializableExtra(BookDetailFragment.BOOK);
-        numberMedia = mBook.getNumberAudiosFile();
         initView();
         initAudioPlayer();
-        initAudioData();
     }
 
 
@@ -79,31 +75,52 @@ public class MediaPlayerActivity extends BaseActivity {
         try {
             mediaPlayer.setDataSource(URL);
             mediaPlayer.prepare();
-            txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
-            progressMedia.setMax(mediaPlayer.getDuration());
-            progressMedia.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
-                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                    if (fromUser){
-                        mPlayerControl.seekTo(progress);
-                    }
-                }
+                public void onPrepared(MediaPlayer mp) {
+                    isReadyPlay = true;
+                    txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
+                    progressMedia.setMax(mediaPlayer.getDuration());
+                    progressMedia.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                        @Override
+                        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                            if (fromUser){
+                                mPlayerControl.seekTo(progress);
+                            }
+                        }
 
-                @Override
-                public void onStartTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStartTrackingTouch(SeekBar seekBar) {
 
-                }
+                        }
 
-                @Override
-                public void onStopTrackingTouch(SeekBar seekBar) {
+                        @Override
+                        public void onStopTrackingTouch(SeekBar seekBar) {
 
+                        }
+                    });
+                    AudioPlayerActivity.this.runOnUiThread(updateSongPerTime);
                 }
             });
-
-            MediaPlayerActivity.this.runOnUiThread(updateSongPerTime);
+            mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    if (isRepeatOne) {
+                        mediaPlayer.reset();
+                        mediaPlayer.start();
+                    } else {
+                        nextAudio();
+                    }
+                }
+            });
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void nextAudio() {
+
+        //TODO
     }
 
     @Override
@@ -128,27 +145,28 @@ public class MediaPlayerActivity extends BaseActivity {
         listMedia.setAdapter(mediaAdapter);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        if (getSupportActionBar()!=null){
+        if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayShowTitleEnabled(false);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
-
 
         playPauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try{
-                    if (mPlayerControl.isPlaying()){
-                        progressMedia.setEnabled(true);
-                        playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48px);
-                        mPlayerControl.pause();
-                    } else {
-                        progressMedia.setEnabled(true);
-                        playPauseButton.setImageResource(R.drawable.ic_pause_white_48px);
-                        mPlayerControl.start();
+                    if (isReadyPlay){
+                        if (mPlayerControl.isPlaying()){
+                            progressMedia.setEnabled(true);
+                            playPauseButton.setImageResource(R.drawable.ic_play_arrow_white_48px);
+                            mPlayerControl.pause();
+                        } else {
+                            progressMedia.setEnabled(true);
+                            playPauseButton.setImageResource(R.drawable.ic_pause_white_48px);
+                            mPlayerControl.start();
+                        }
                     }
                 } catch (Exception e){
-                    Toast.makeText(MediaPlayerActivity.this, "Trình nghe nhạc chưa sẵn sàng!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(AudioPlayerActivity.this, "Trình nghe nhạc chưa sẵn sàng!", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -171,13 +189,13 @@ public class MediaPlayerActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        initAudioData();
         initData();
     }
 
     private void initData() {
         if (mBook != null){
             txtTileMusic.setText(mBook.getName());
-
         }
     }
     @Override

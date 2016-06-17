@@ -39,11 +39,15 @@
         </RelativeLayout>
 
         <RatingBar
+            android:theme="@style/RatingBar"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="10dp"
             android:id="@+id/ratingStarComment"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:numStars="5"
+            android:stepSize="0.5"
+            android:rating="3.5"
             style="@style/Base.Widget.AppCompat.RatingBar"/>
         <View
             android:layout_marginLeft="20dp"

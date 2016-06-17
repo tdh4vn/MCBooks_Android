@@ -5,6 +5,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -12,18 +13,25 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
+import vn.mcbooks.mcbooks.intef.IReloadData;
 import vn.mcbooks.mcbooks.listener.RecyclerItemClickListener;
 import vn.mcbooks.mcbooks.model.LoginSocialResult;
 import vn.mcbooks.mcbooks.model.Result;
 import vn.mcbooks.mcbooks.singleton.ListBooksSingleton;
 
 
-public class HomeFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment
+        implements IReloadData.ILoadDataCompleteCallBack,
+                    View.OnClickListener{
     public static final String NAME = HomeFragment.class.toString();
+
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private IReloadData iReloadData;
 
     //-----------Data
     private Result dataLoginResult;
@@ -32,9 +40,18 @@ public class HomeFragment extends BaseFragment {
     private RecyclerView recyclerViewHotBook;
     private RecyclerView recyclerViewNewBook;
     private RecyclerView recyclerViewComingBook;
-
+    private BookInHomeAdapter adapterForComingBookList;
+    private BookInHomeAdapter adapterForNewBookList;
+    private BookInHomeAdapter adapterForHotBookList;
+    private Button btnMoreHotBook;
+    private Button btnMoreNewBook;
+    private Button btnMoreComingBook;
     public void setDataLoginResult(Result dataLoginResult) {
         this.dataLoginResult = dataLoginResult;
+    }
+
+    public void setiReloadData(IReloadData iReloadData) {
+        this.iReloadData = iReloadData;
     }
 
     public HomeFragment() {
@@ -54,9 +71,25 @@ public class HomeFragment extends BaseFragment {
     }
 
     public void initView(View view){
+        swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_reload_data);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (iReloadData != null) {
+                    iReloadData.reloadData();
+                }
+            }
+        });
         recyclerViewHotBook = (RecyclerView)view.findViewById(R.id.listBookHotSeller);
         recyclerViewNewBook = (RecyclerView)view.findViewById(R.id.listBooksNew);
         recyclerViewComingBook = (RecyclerView)view.findViewById(R.id.listBooksInRelease);
+        btnMoreHotBook = (Button) view.findViewById(R.id.btnBookHotSeller);
+        btnMoreHotBook.setOnClickListener(this);
+        btnMoreNewBook = (Button) view.findViewById(R.id.btnBookNew);
+        btnMoreNewBook.setOnClickListener(this);
+        btnMoreComingBook = (Button) view.findViewById(R.id.btnBooksInRelease);
+        btnMoreComingBook.setOnClickListener(this);
+
     }
 
     private void initData(){
@@ -64,7 +97,7 @@ public class HomeFragment extends BaseFragment {
         LinearLayoutManager layoutManagerForListHotBook
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerViewHotBook.setLayoutManager(layoutManagerForListHotBook);
-        BookInHomeAdapter adapterForHotBookList
+        adapterForHotBookList
                 = new BookInHomeAdapter();
         if (dataLoginResult == null){
             dataLoginResult = ListBooksSingleton.getInstance().getResult();
@@ -90,7 +123,7 @@ public class HomeFragment extends BaseFragment {
         LinearLayoutManager layoutManagerForListNewBook
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerViewNewBook.setLayoutManager(layoutManagerForListNewBook);
-        BookInHomeAdapter adapterForNewBookList
+        adapterForNewBookList
                 = new BookInHomeAdapter();
         adapterForNewBookList.setmContext(getContext());
         adapterForNewBookList.setListBook(dataLoginResult.getNewBooks());
@@ -113,7 +146,7 @@ public class HomeFragment extends BaseFragment {
         LinearLayoutManager layoutManagerForListComingBook
                 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         recyclerViewComingBook.setLayoutManager(layoutManagerForListComingBook);
-        BookInHomeAdapter adapterForComingBookList
+        adapterForComingBookList
                 = new BookInHomeAdapter();
         adapterForComingBookList.setmContext(getContext());
         adapterForComingBookList.setListBook(dataLoginResult.getComingBooks());
@@ -139,4 +172,39 @@ public class HomeFragment extends BaseFragment {
         super.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void reloadDataComplete() {
+        dataLoginResult = ListBooksSingleton.getInstance().getResult();
+        adapterForHotBookList.setListBook(dataLoginResult.getHotBooks());
+        adapterForHotBookList.notifyDataSetChanged();
+        adapterForComingBookList.setListBook(dataLoginResult.getComingBooks());
+        adapterForComingBookList.notifyDataSetChanged();
+        adapterForNewBookList.setListBook(dataLoginResult.getNewBooks());
+        adapterForNewBookList.notifyDataSetChanged();
+        swipeRefreshLayout.setRefreshing(false);
+    }
+
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.btnBookHotSeller:
+                MoreBooksFragment moreBooksHotFragment = new MoreBooksFragment();
+                moreBooksHotFragment.setBookType(MoreBooksFragment.HOT_BOOKS);
+                ((IOpenFragment)getActivity()).openFragment(moreBooksHotFragment, true);
+                break;
+            case R.id.btnBookNew:
+                MoreBooksFragment moreBooksNewFragment = new MoreBooksFragment();
+                moreBooksNewFragment.setBookType(MoreBooksFragment.NEW_BOOKS);
+                ((IOpenFragment)getActivity()).openFragment(moreBooksNewFragment, true);
+                break;
+            case R.id.btnBooksInRelease:
+                MoreBooksFragment moreBooksComingFragment = new MoreBooksFragment();
+                moreBooksComingFragment.setBookType(MoreBooksFragment.COMING_BOOKS);
+                ((IOpenFragment)getActivity()).openFragment(moreBooksComingFragment, true);
+                break;
+            default:
+                break;
+        }
+    }
 }

@@ -10,8 +10,8 @@ import android.widget.MediaController.MediaPlayerControl;
 public class PlayerControl implements MediaPlayerControl {
     private final MediaPlayer mediaPlayer;
 
-    public PlayerControl(MediaPlayer mExoplayer) {
-        this.mediaPlayer = mExoplayer;
+    public PlayerControl(MediaPlayer mediaPlayer) {
+        this.mediaPlayer = mediaPlayer;
     }
 
     @Override

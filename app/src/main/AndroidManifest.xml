@@ -35,12 +35,13 @@
             android:name=".activity.SearchActivity"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activity.MediaPlayerActivity"
+            android:name=".activity.AudioPlayerActivity"
             android:label="@string/title_activity_media_player"
-            android:theme="@style/AppTheme.NoTitle"></activity>
+            android:theme="@style/AppTheme.NoTitle" />
         <activity
             android:name=".activity.ShowImageActivity"
-            android:label="@string/title_activity_show_image"></activity>
+            android:label="@string/title_activity_show_image" />
+        <activity android:name=".activity.YoutubePlayerActivity"></activity>
     </application>
 
 </manifest>

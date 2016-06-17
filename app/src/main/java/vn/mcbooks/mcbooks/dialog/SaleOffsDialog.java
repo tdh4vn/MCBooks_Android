@@ -34,7 +34,7 @@ public class SaleOffsDialog extends DialogFragment {
         TextView textView = (TextView)v.findViewById(R.id.txtSaleOffs);
         String str = new String();
         for (String s: saleOffs){
-            str = str + "+" + s +"\n";
+            str = str + "+ " + s +"\n";
         }
         textView.setText(str);
         return v;

@@ -15,6 +15,8 @@ import com.squareup.picasso.Picasso;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.activity.LoginActivity;
 import vn.mcbooks.mcbooks.image_helper.CircleTransform;
+import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
+import vn.mcbooks.mcbooks.intef.IToolBarController;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -31,6 +33,16 @@ public class ProfileFragment extends BaseFragment {
         // Required empty public constructor
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+//        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
+//        bottomNavigationController.setCurrentOfBottomNavigation(4);
+        IToolBarController toolBarController = (IToolBarController)getActivity();
+        toolBarController.setVisibilityForTitles(View.GONE);
+        toolBarController.changeTitles("");
+        toolBarController.setVisibilityForLogo(View.VISIBLE);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

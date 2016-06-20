@@ -1,5 +1,7 @@
 package vn.mcbooks.mcbooks.utils;
 
+import vn.mcbooks.mcbooks.model.Information;
+
 /**
  * Created by hungtran on 6/11/16.
  */
@@ -44,5 +46,11 @@ public class StringUtils {
 
         // return timer string
         return finalTimerString;
+    }
+    public static String getShortDetail(Information information){
+        String rs;
+        rs = "NXB: " + information.getPublisher() + "\n" + "Tác giả: " + information.getAuthor();
+        return rs;
+
     }
 }

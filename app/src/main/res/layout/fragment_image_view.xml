@@ -2,11 +2,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="vn.mcbooks.mcbooks.fragment.MyBooksFragment">
+    tools:context="vn.mcbooks.mcbooks.fragment.ImageViewFragment">
 
     <!-- TODO: Update blank fragment layout -->
-
-
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageView" />
 
 
 </FrameLayout>

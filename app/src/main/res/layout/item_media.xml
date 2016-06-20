@@ -2,7 +2,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:padding="10dp">
+    android:padding="10dp"
+    android:background="@android:color/background_light"
+    android:id="@+id/contentPanel">
     <ImageView
         android:id="@+id/iconMedia"
         android:layout_marginLeft="10dp"
@@ -25,7 +27,26 @@
         android:layout_marginTop="10dp"
         android:text="1:32"
         android:textSize="16sp"
+        android:freezesText="true"
         android:id="@+id/txtTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/favoriteMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/favorite_stroke"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"/>
+    <ImageButton
+        android:id="@+id/downloadMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_file_download_blue_24dp"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:layout_toLeftOf="@id/favoriteMedia"/>
 </RelativeLayout>

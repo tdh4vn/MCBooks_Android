@@ -30,6 +30,9 @@
                     android:background="@android:color/transparent"/>
                 <TextView
                     android:id="@+id/titleYoutube"
+                    android:layout_marginRight="12dp"
+                    android:layout_marginLeft="12dp"
+                    android:freezesText="true"
                     android:layout_centerInParent="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -47,6 +50,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp" />
     <ListView
+        android:id="@+id/listVideos"
         android:layout_below="@id/youtube_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>

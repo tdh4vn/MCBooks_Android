@@ -54,6 +54,7 @@ public class Media implements Serializable{
         this.type = type;
     }
 
+
     public static final int VIDEO_TYPE = 1;
     public static final int AUDIO_TYPE = 0;
 }

@@ -1,18 +1,29 @@
 package vn.mcbooks.mcbooks.fragment;
 
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.adapter.AdPageAdapter;
 import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
+import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.IReloadData;
+import vn.mcbooks.mcbooks.intef.IToolBarController;
 import vn.mcbooks.mcbooks.listener.RecyclerItemClickListener;
 import vn.mcbooks.mcbooks.model.Result;
 import vn.mcbooks.mcbooks.singleton.ContentManager;
@@ -25,6 +36,7 @@ public class HomeFragment extends BaseFragment
 
     private SwipeRefreshLayout swipeRefreshLayout;
     private IReloadData iReloadData;
+    private SliderLayout sliderAd;
 
     //-----------Data
     private Result dataLoginResult;
@@ -39,6 +51,8 @@ public class HomeFragment extends BaseFragment
     private Button btnMoreHotBook;
     private Button btnMoreNewBook;
     private Button btnMoreComingBook;
+    //private ViewPager pagerForAd;
+
     public void setDataLoginResult(Result dataLoginResult) {
         this.dataLoginResult = dataLoginResult;
     }
@@ -63,6 +77,19 @@ public class HomeFragment extends BaseFragment
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+//        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
+//        bottomNavigationController.setCurrentOfBottomNavigation(0);
+        IToolBarController toolBarController = (IToolBarController)getActivity();
+        toolBarController.setVisibilityForTitles(View.GONE);
+        toolBarController.changeTitles("");
+        toolBarController.setVisibilityForLogo(View.VISIBLE);
+        //AdPageAdapter adPageAdapter = new AdPageAdapter(getActivity().getSupportFragmentManager());
+         //pagerForAd.setAdapter(adPageAdapter);
+      }
+
     public void initView(View view){
         swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_reload_data);
         swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -73,6 +100,10 @@ public class HomeFragment extends BaseFragment
                 }
             }
         });
+        //pagerForAd = (ViewPager)view.findViewById(R.id.listAd);
+        sliderAd = (SliderLayout) view.findViewById(R.id.listAd);
+        createSlider();
+
         recyclerViewHotBook = (RecyclerView)view.findViewById(R.id.listBookHotSeller);
         recyclerViewNewBook = (RecyclerView)view.findViewById(R.id.listBooksNew);
         recyclerViewComingBook = (RecyclerView)view.findViewById(R.id.listBooksInRelease);
@@ -83,6 +114,22 @@ public class HomeFragment extends BaseFragment
         btnMoreComingBook = (Button) view.findViewById(R.id.btnBooksInRelease);
         btnMoreComingBook.setOnClickListener(this);
 
+    }
+
+    private void createSlider(){
+        DefaultSliderView sliderView1 = new DefaultSliderView(getActivity());
+        sliderView1.image("http://mcbooks.vn/images/banner/ad864885451f28d7cb9a79626cf830a4.png");
+        DefaultSliderView sliderView2 = new DefaultSliderView(getActivity());
+        sliderView2.image("http://mcbooks.vn/images/banner/ea2380194f5fe09187a3497dedf1b099.png");
+        DefaultSliderView sliderView3 = new DefaultSliderView(getActivity());
+        sliderView3.image("http://mcbooks.vn/images/banner/10efab4cb2ca77b1f5c4a70d9ee8399d.png");
+        sliderAd.addSlider(sliderView1);
+        sliderAd.addSlider(sliderView2);
+        sliderAd.addSlider(sliderView3);
+        sliderAd.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        sliderAd.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        sliderAd.setCustomAnimation(new DescriptionAnimation());
+        sliderAd.setDuration(4000);
     }
 
     private void initData(){
@@ -101,8 +148,8 @@ public class HomeFragment extends BaseFragment
         recyclerViewHotBook.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewHotBook, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                bookDetailFragment.setmBook(dataLoginResult.getHotBooks().get(position));
+                BookDetailFragment bookDetailFragment
+                        = BookDetailFragment.create(dataLoginResult.getHotBooks().get(position), getString(R.string.hot_books_titles));
                 ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
             }
 
@@ -124,8 +171,8 @@ public class HomeFragment extends BaseFragment
         recyclerViewNewBook.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewNewBook, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                bookDetailFragment.setmBook(dataLoginResult.getNewBooks().get(position));
+                BookDetailFragment bookDetailFragment
+                        = BookDetailFragment.create(dataLoginResult.getNewBooks().get(position), getString(R.string.news_book_titles));
                 ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
             }
 
@@ -147,8 +194,8 @@ public class HomeFragment extends BaseFragment
         recyclerViewComingBook.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewComingBook, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                bookDetailFragment.setmBook(dataLoginResult.getComingBooks().get(position));
+                BookDetailFragment bookDetailFragment
+                        = BookDetailFragment.create(dataLoginResult.getComingBooks().get(position), getString(R.string.coming_books));
                 ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
             }
 
@@ -183,16 +230,19 @@ public class HomeFragment extends BaseFragment
         switch (v.getId()){
             case R.id.btnBookHotSeller:
                 MoreBooksFragment moreBooksHotFragment = new MoreBooksFragment();
+                moreBooksHotFragment.titles = getString(R.string.hot_books_titles);
                 moreBooksHotFragment.setBookType(MoreBooksFragment.HOT_BOOKS);
                 ((IOpenFragment)getActivity()).openFragment(moreBooksHotFragment, true);
                 break;
             case R.id.btnBookNew:
                 MoreBooksFragment moreBooksNewFragment = new MoreBooksFragment();
+                moreBooksNewFragment.titles = getString(R.string.news_book_titles);
                 moreBooksNewFragment.setBookType(MoreBooksFragment.NEW_BOOKS);
                 ((IOpenFragment)getActivity()).openFragment(moreBooksNewFragment, true);
                 break;
             case R.id.btnBooksInRelease:
                 MoreBooksFragment moreBooksComingFragment = new MoreBooksFragment();
+                moreBooksComingFragment.titles = getString(R.string.coming_books);
                 moreBooksComingFragment.setBookType(MoreBooksFragment.COMING_BOOKS);
                 ((IOpenFragment)getActivity()).openFragment(moreBooksComingFragment, true);
                 break;

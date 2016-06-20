@@ -3,8 +3,12 @@ package vn.mcbooks.mcbooks.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.youtube.player.YouTubeBaseActivity;
@@ -12,13 +16,25 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.adapter.ListVideoAdapter;
 import vn.mcbooks.mcbooks.constant.AppConstant;
+import vn.mcbooks.mcbooks.model.Book;
+import vn.mcbooks.mcbooks.model.Media;
+import vn.mcbooks.mcbooks.model.Video;
 
 public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         YouTubePlayer.OnInitializedListener{
-
+    public static final String BOOK_KEY = "BOOK";
+    private int index = 0;
+    private boolean isFullScreen = false;
+    private ListView listVideo;
     private static final int RECOVERY_DIALOG_REQUEST = 1;
+    private Book mBook;
+    private List<Video> videoList = new ArrayList<>();
 
     private YouTubePlayerView youTubePlayerView;
     ImageButton btnBack;
@@ -29,6 +45,8 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         setContentView(R.layout.activity_youtube_player);
         youTubePlayerView = (YouTubePlayerView)findViewById(R.id.youtube_view);
         youTubePlayerView.initialize(AppConstant.DEVELOPER_KEY, this);
+        TextView txtTitle = (TextView)findViewById(R.id.titleYoutube);
+
         btnBack = (ImageButton)findViewById(R.id.btn_home);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -36,14 +54,52 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
                 finish();
             }
         });
+        listVideo = (ListView)findViewById(R.id.listVideos);
+        mBook = (Book)getIntent().getExtras().getSerializable(BOOK_KEY);
+        txtTitle.setText(mBook.getName());
+        createListVideo();
+        ListVideoAdapter listVideoAdapter = new ListVideoAdapter(videoList, this);
+        listVideo.setAdapter(listVideoAdapter);
+        listVideo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                openVideo(videoList.get(position).getId());
+                index = position;
+                ((ListVideoAdapter)listVideo.getAdapter()).setIndexPlay(index);
+                ((ListVideoAdapter)listVideo.getAdapter()).notifyDataSetChanged();
+            }
+        });
+    }
+
+    void createListVideo(){
+        for (Media media : mBook.getMedias()){
+            if (media.getType() == Media.VIDEO_TYPE){
+                Video video = new Video();
+                video.setId(media.getId());
+                video.setUrl(media.getUrl());
+                video.setName(media.getName());
+                Log.d("HUNG",video.getUrl().split("v=").length + "");
+                String id = video.getUrl().split("v=")[1];
+                Log.d("HungTD2222", id);
+                video.setId(id);
+                videoList.add(video);
+            }
+        }
     }
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-        if (!b) {
+
             this.youTubePlayer = youTubePlayer;
-            openVideo("g9L7PXcIaKU");
-        }
+            this.youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
+                @Override
+                public void onFullscreen(boolean b) {
+                    isFullScreen = b;
+                    Log.d("ABC",  String.valueOf(isFullScreen));
+                }
+            });
+            openVideo(videoList.get(index).getId());
+
     }
 
     @Override
@@ -55,6 +111,20 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
                     getString(R.string.error_player), youTubeInitializationResult.toString());
             Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        Log.d("ABC22",  String.valueOf(isFullScreen));
+        if (isFullScreen){
+            Log.d("ACBD", "Full Screen");
+            youTubePlayer.setFullscreen(false);
+        } else {
+            Log.d("ACBD", "Full Screen2");
+            super.onBackPressed();
+        }
+        //super.onBackPressed();
     }
 
     @Override

@@ -10,8 +10,6 @@ import vn.mcbooks.mcbooks.intef.ILogout;
  * Created by hungtran on 5/29/16.
  */
 public class BaseActivity extends AppCompatActivity{
-
-
     public void openActivity(Class activityClass, Bundle bundle){
         Intent intent = new Intent(this, activityClass);
         intent.putExtras(bundle);

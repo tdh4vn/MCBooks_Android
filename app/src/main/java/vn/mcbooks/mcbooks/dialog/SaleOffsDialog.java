@@ -2,6 +2,7 @@ package vn.mcbooks.mcbooks.dialog;
 
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,11 +33,11 @@ public class SaleOffsDialog extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_sale_offs, container, false);
         getDialog().setTitle("Khuyến mại");
         TextView textView = (TextView)v.findViewById(R.id.txtSaleOffs);
-        String str = new String();
+        String str = "";
         for (String s: saleOffs){
-            str = str + "+ " + s +"\n";
+            str = str + "&#9679; " + s +"<br><br>";
         }
-        textView.setText(str);
+        textView.setText(Html.fromHtml(str));
         return v;
     }
 }

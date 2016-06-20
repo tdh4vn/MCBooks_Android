@@ -26,6 +26,7 @@ import vn.mcbooks.mcbooks.activity.LoginActivity;
 import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
 import vn.mcbooks.mcbooks.exception.SetBookTypeException;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
+import vn.mcbooks.mcbooks.intef.IToolBarController;
 import vn.mcbooks.mcbooks.listener.RecyclerItemClickListener;
 import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.GetBookResult;
@@ -67,9 +68,6 @@ public class MoreBooksFragment extends BaseFragment{
 
     private RecyclerView listBooks;
 
-    public MoreBooksFragment() {
-
-    }
 
     public void setBookType(String bookType) {
         if (bookType.equals(HOT_BOOKS) || bookType.equals(NEW_BOOKS) || bookType.equals(COMING_BOOKS)){
@@ -86,6 +84,14 @@ public class MoreBooksFragment extends BaseFragment{
         showDialogLoading();
         initListBooks();
         loadBooks(pageNumber);
+        if (this.titles.equals("")){
+            IToolBarController toolBarController = (IToolBarController)getActivity();
+            toolBarController.setVisibilityForTitles(View.GONE);
+            toolBarController.changeTitles("");
+            toolBarController.setVisibilityForLogo(View.VISIBLE);
+        } else {
+            configToolBar();
+        }
         return rootView;
     }
 
@@ -106,7 +112,6 @@ public class MoreBooksFragment extends BaseFragment{
         GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
         String token = ContentManager.getInstance().getToken();
         Call<GetBookResult> getBookServiceCall;
-        Log.d("MoreBook", bookType + " - " + idCategory);
         if (!bookType.equals("null")){
             getBookServiceCall = getBookService.getBooks(StringUtils.tokenBuild(token), bookType, page);
         } else {
@@ -147,15 +152,14 @@ public class MoreBooksFragment extends BaseFragment{
         listBooks.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
             public void onLoadMore(int page, int totalItemsCount) {
-                Log.d("HungTD", "LoadMore");
                 loadBooks(pageNumber);
             }
         });
         listBooks.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), listBooks, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                bookDetailFragment.setmBook(listBookResult.getResult().get(position));
+                BookDetailFragment bookDetailFragment
+                        = BookDetailFragment.create(listBookResult.getResult().get(position));
                 ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
             }
             @Override

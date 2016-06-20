@@ -1,0 +1,31 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="vn.mcbooks.mcbooks.fragment.FavoriteFragment">
+    <android.support.design.widget.TabLayout
+        android:background="@color/colorPrimary"
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/NavigationTab">
+        <android.support.design.widget.TabItem
+            android:text="Sách yêu thích"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <android.support.design.widget.TabItem
+            android:text="Audio yêu thích"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <android.support.design.widget.TabItem
+            android:text="Video yêu thích"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </android.support.design.widget.TabLayout>
+    <android.support.v4.view.ViewPager
+        android:layout_below="@id/tabLayout"
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</RelativeLayout>

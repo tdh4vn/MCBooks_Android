@@ -14,7 +14,8 @@
             android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:elevation="0dp">
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
@@ -26,60 +27,37 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
                     <ImageView
+                        android:id="@+id/logoToolBar"
                         android:layout_centerInParent="true"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
-                        android:src="@drawable/logo_mcbooks"/>
+                        android:src="@drawable/logo_fill_white"/>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/titleToolBar"
+                        android:layout_marginLeft="0dp"
+                        android:layout_centerVertical="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:text="MCBooks"
+                        android:textSize="16sp"
+                        android:textStyle="bold"/>
                 </RelativeLayout>
             </android.support.v7.widget.Toolbar>
+
         </android.support.design.widget.AppBarLayout>
         <FrameLayout
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"/>
-        <LinearLayout
-            android:background="@color/colorPrimary"
-            android:orientation="horizontal"
-            android:id="@+id/bottom_control"
+        <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+            android:id="@+id/bottom_navigation"
             android:layout_width="match_parent"
-            android:layout_height="50dp">
-            <ImageButton
-                android:id="@+id/btn_home"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_home_white_24px"
-                android:background="@drawable/button_bottom_background"/>
-            <ImageButton
-                android:id="@+id/btn_gift"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_card_giftcard_white_24px"
-                android:background="@drawable/button_bottom_background"/>
-            <ImageButton
-                android:id="@+id/btn_QR"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@mipmap/ic_qr_white"
-                android:background="@color/colorQRBackground"/>
-            <ImageButton
-                android:id="@+id/btn_favarite"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_favorite_white_24px"
-                android:background="@drawable/button_bottom_background"/>
-            <ImageButton
-                android:id="@+id/btn_profile"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_account_circle_white_24px"
-                android:background="@drawable/button_bottom_background"/>
-        </LinearLayout>
+            android:layout_height="50dp"
+            android:layout_gravity="bottom"
+            android:background="@color/colorPrimary"/>
     </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

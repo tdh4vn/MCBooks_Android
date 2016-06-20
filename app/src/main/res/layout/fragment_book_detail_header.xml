@@ -12,6 +12,15 @@
             android:layout_centerHorizontal="true"
             android:layout_width="150dp"
             android:layout_height="180dp" />
+        <ImageButton
+            android:paddingRight="-10dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:id="@+id/btnSaleOffs"
+            android:src="@drawable/gift"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@android:color/transparent" />
         <Button
             android:id="@+id/btnRead"
             android:layout_alignParentBottom="true"
@@ -49,6 +58,8 @@
             android:textStyle="bold"
             android:text="Hướng dẫn ôn tập và kiểm tra Tiếng Anh lớp 7 - Tập 2"/>
         <TextView
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
             android:layout_marginTop="5dp"
             android:lineSpacingExtra="5dp"
             android:id="@+id/shortDetail"
@@ -62,7 +73,7 @@
             android:layout_marginTop="5dp"
             android:layout_width="wrap_content"
             android:text="5.0"
-            android:textSize="12sp"
+            android:textSize="16sp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_height="wrap_content"
@@ -90,17 +101,7 @@
             android:background="@drawable/background_border"
             android:textColor="@android:color/holo_blue_dark"
             android:layout_alignBaseline="@id/ratingStar"/>
-        <ImageButton
-            android:layout_toEndOf="@id/tmp_starIcon"
-            android:layout_toStartOf="@id/price"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="8dp"
-            android:id="@+id/btnSaleOffs"
-            android:src="@drawable/gift"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:background="@android:color/transparent" />
+
     </RelativeLayout>
 
 </LinearLayout>

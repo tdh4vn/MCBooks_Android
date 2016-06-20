@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:padding="10dp"
+    android:id="@+id/contentPanel">
+    <ImageView
+        android:id="@+id/iconMedia"
+        android:layout_marginLeft="10dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@mipmap/media_icon_g"/>
+    <TextView
+        android:id="@+id/txtAudioName"
+        android:layout_toEndOf="@id/iconMedia"
+        android:layout_marginLeft="10dp"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Listening phrase 1"
+        android:textStyle="bold" />
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@id/iconMedia"
+        android:layout_below="@id/txtAudioName"
+        android:layout_marginTop="10dp"
+        android:text="1:32"
+        android:textSize="16sp"
+        android:id="@+id/txtTime"
+        android:freezesText="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <ImageButton
+        android:id="@+id/favoriteMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/favorite_stroke"
+        android:layout_marginRight="10dp"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"/>
+    <ImageButton
+        android:visibility="gone"
+        android:id="@+id/downloadMedia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_file_download_blue_24dp"
+        android:background="@android:color/transparent"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:layout_toLeftOf="@id/favoriteMedia"/>
+</RelativeLayout>

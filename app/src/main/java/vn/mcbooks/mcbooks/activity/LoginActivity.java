@@ -76,9 +76,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     public static String GOOGLE_TYPE = "GOOGLE";
     public static String DATA = "DATA";
 
-
-
-
     private Result loginResultData;
     private LoginButton loginFacebookButton;
     private CallbackManager callbackManager;
@@ -109,7 +106,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //printHashKey();
         FacebookSdk.sdkInitialize(getApplicationContext());
         setContentView(R.layout.activity_login);
         AppEventsLogger.activateApp(getApplication());

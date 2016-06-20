@@ -11,12 +11,23 @@ import java.io.Serializable;
 
 public class Information implements Serializable{
 
+    @SerializedName("description")
+    @Expose
+    private String description;
     @SerializedName("publisher")
     @Expose
     private String publisher;
     @SerializedName("author")
     @Expose
     private String author;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public String getPublisher() {
         return publisher;

@@ -1,0 +1,62 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="250dp">
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="250dp">
+        <ImageView
+            android:id="@+id/iconBook"
+            android:layout_centerHorizontal="true"
+            android:layout_width="150dp"
+            android:layout_height="180dp" />
+        <Button
+            android:id="@+id/btnAudio"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:textAllCaps="false"
+            android:text="Nghe Audio"
+            android:textColor="@android:color/holo_blue_dark"
+            android:background="@drawable/button_stoke"/>
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:padding="5dp"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="250dp">
+        <TextView
+            android:id="@+id/bookName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:text="Hướng dẫn ôn tập và kiểm tra Tiếng Anh lớp 7 - Tập 2"/>
+        <TextView
+            android:layout_marginRight="5dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="5dp"
+            android:lineSpacingExtra="5dp"
+            android:id="@+id/shortDetail"
+            android:layout_below="@id/bookName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="NXB: Đại Học Quốc Gia Hà Nội\nTác giả: The Windy\nSố trang: 136\nKích thước: 17 x 24cm"/>
+        <Button
+            android:layout_marginBottom="5dp"
+            android:id="@+id/btnVideo"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:textAllCaps="false"
+            android:text="Xem Video"
+            android:textColor="@android:color/holo_blue_dark"
+            android:background="@drawable/button_stoke"/>
+    </RelativeLayout>
+
+</LinearLayout>

@@ -16,10 +16,7 @@ public class Ratings implements Serializable{
     private Float avgStar;
     @SerializedName("my_rating")
     @Expose
-    private UserRating myRating;
-    @SerializedName("rating_list")
-    @Expose
-    private List<UserRating> ratingList = new ArrayList<UserRating>();
+    private MyRating myRating;
 
     public Float getAvgStar() {
         return avgStar;
@@ -29,20 +26,12 @@ public class Ratings implements Serializable{
         this.avgStar = avgStar;
     }
 
-    public UserRating getMyRating() {
+    public MyRating getMyRating() {
         return myRating;
     }
 
-    public void setMyRating(UserRating myRating) {
+    public void setMyRating(MyRating myRating) {
         this.myRating = myRating;
     }
 
-
-    public List<UserRating> getRatingList() {
-        return ratingList;
-    }
-
-    public void setRatingList(List<UserRating> ratingList) {
-        this.ratingList = ratingList;
-    }
 }

@@ -1,21 +1,34 @@
 package vn.mcbooks.mcbooks.fragment;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
+import android.text.TextUtils;
+import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
+import org.w3c.dom.Text;
+
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,18 +38,25 @@ import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.activity.BaseActivity;
 import vn.mcbooks.mcbooks.activity.AudioPlayerActivity;
+import vn.mcbooks.mcbooks.activity.LoginActivity;
 import vn.mcbooks.mcbooks.activity.ShowImageActivity;
 import vn.mcbooks.mcbooks.activity.YoutubePlayerActivity;
+import vn.mcbooks.mcbooks.adapter.ListReviewAdapter;
 import vn.mcbooks.mcbooks.dialog.SaleOffsDialog;
+import vn.mcbooks.mcbooks.image_helper.CircleTransform;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.ITabLayoutManager;
 import vn.mcbooks.mcbooks.intef.IToolBarController;
 import vn.mcbooks.mcbooks.model.BaseResult;
 import vn.mcbooks.mcbooks.model.Book;
+import vn.mcbooks.mcbooks.model.GetRatingResult;
 import vn.mcbooks.mcbooks.model.Information;
 import vn.mcbooks.mcbooks.model.Media;
+import vn.mcbooks.mcbooks.model.RatingViewModel;
+import vn.mcbooks.mcbooks.model.UserRating;
 import vn.mcbooks.mcbooks.network_api.APIURL;
 import vn.mcbooks.mcbooks.network_api.FavoriteServices;
+import vn.mcbooks.mcbooks.network_api.RatingServices;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
 import vn.mcbooks.mcbooks.singleton.ContentManager;
 import vn.mcbooks.mcbooks.utils.StringUtils;
@@ -49,6 +69,7 @@ public class BookDetailFragment extends BaseFragment {
     //---------data
     private Book mBook;
     boolean isLoadMore = false;
+    private int pageComment = 1;
 
     //------------view
     private ImageView iconBook;
@@ -64,7 +85,22 @@ public class BookDetailFragment extends BaseFragment {
     private Button btnReadMore;
     private ImageButton btnFavorite;
     private TextView txtDescription;
+    private ImageView imgAvatar;
+    private RatingBar ratingBar;
+    private ListView listRating;
+    private ArrayList<RatingViewModel> listRatingViewModel;
+    private EditText edtContentReview;
+    private Button btnCancle;
+    private Button btnSubmit;
+    private LinearLayout frmRating;
 
+    //----frm My COmmment
+    private RelativeLayout frmMyComment;
+    private ImageView imgAvatarMyComment;
+    private TextView txtUserNameMyComment;
+    private TextView ratingStarMyComment;
+    private TextView timeComment;
+    private TextView myComment;
 
     public void setmBook(Book mBook) {
         this.mBook = mBook;
@@ -191,6 +227,58 @@ public class BookDetailFragment extends BaseFragment {
                 ((BaseActivity)getActivity()).openActivity(ShowImageActivity.class, bundle);
             }
         });
+
+
+        imgAvatar = (ImageView) view.findViewById(R.id.imgAvatar);
+        ratingBar = (RatingBar) view.findViewById(R.id.ratingStarComment);
+        listRating = (ListView) view.findViewById(R.id.listReview);
+
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+
+            }
+        });
+
+        edtContentReview = (EditText)view.findViewById(R.id.edtQuickReview);
+        btnCancle = (Button) view.findViewById(R.id.btnCancle);
+        btnSubmit = (Button) view.findViewById(R.id.btnSubmit);
+
+        btnSubmit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                RatingServices ratingServices
+                        = ServiceFactory.getInstance().createService(RatingServices.class);
+                if (!TextUtils.isEmpty(edtContentReview.getText())) {
+                    Call<BaseResult> call
+                            = ratingServices.ratingBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mBook.getId(), (int) ratingBar.getRating(), edtContentReview.getText().toString());
+                    call.enqueue(new Callback<BaseResult>() {
+                        @Override
+                        public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
+                            if (response.body().getCode() != 1){
+                                showToast(response.body().getMessage(), Toast.LENGTH_LONG);
+                            } else {
+                                showToast("Cảm ơn bạn đã đánh giá!", Toast.LENGTH_LONG);
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<BaseResult> call, Throwable t) {
+                            showToast("Bạn vui lòng đăng nhập lại hoặc kiểm tra kết nối mạng", Toast.LENGTH_LONG);
+                        }
+                    });
+                }
+            }
+        });
+
+        frmRating = (LinearLayout) view.findViewById(R.id.frmRating);
+        imgAvatarMyComment = (ImageView)view.findViewById(R.id.imgAvatarMyComment);
+        frmMyComment = (RelativeLayout) view.findViewById(R.id.frmMyComment);
+        txtUserNameMyComment = (TextView) view.findViewById(R.id.txtUserNameMyComment);
+        ratingStarMyComment = (TextView) view.findViewById(R.id.ratingStarMyComment);
+        timeComment = (TextView) view.findViewById(R.id.timeComment);
+        myComment = (TextView) view.findViewById(R.id.yourComment);
+
     }
 
     @Override
@@ -251,7 +339,68 @@ public class BookDetailFragment extends BaseFragment {
                 btnYoutube.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.darker_gray));
             }
 
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, AppCompatActivity.MODE_PRIVATE);
+            String urlImg = sharedPreferences.getString(LoginActivity.KEY_AVATAR, "");
+            String idUser = sharedPreferences.getString(LoginActivity.KEY_ID, "");
+            final String userName = sharedPreferences.getString(LoginActivity.KEY_NAME, "");
+
+            if (urlImg.equals("")) {
+                Picasso.with(getActivity()).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatar);
+            } else {
+                Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatar);
+            }
+
+            listRatingViewModel = new ArrayList<>();
+
+
+            if (mBook.getRatings().getMyRating() != null && mBook.getRatings().getMyRating().getComment() != null){
+                frmRating.setVisibility(View.GONE);
+                if (urlImg.equals("")) {
+                    Picasso.with(getActivity()).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatarMyComment);
+                } else {
+                    Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                }
+                txtUserNameMyComment.setText(userName);
+                ratingStarMyComment.setText(StringUtils.ratingLabel((int)((float)mBook.getRatings().getMyRating().getStars())) + " \u2109");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                timeComment.setText(dateFormat.format(mBook.getRatings().getMyRating().getCreateAt()));
+                myComment.setText(mBook.getRatings().getMyRating().getComment());
+            } else {
+                frmMyComment.setVisibility(View.GONE);
+            }
+
+            RatingServices ratingServices = ServiceFactory.getInstance().createService(RatingServices.class);
+            pageComment = 1;
+            Call<GetRatingResult> ratingResultCall = ratingServices.getRatingBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mBook.getId(), pageComment);
+            ratingResultCall.enqueue(new Callback<GetRatingResult>() {
+                @Override
+                public void onResponse(Call<GetRatingResult> call, Response<GetRatingResult> response) {
+                    if (response.body().getCode() == 1){
+                        if (response.body().getResult()!=null || response.body().getResult().size() > 0){
+                            for (UserRating userRating : response.body().getResult()){
+                                listRatingViewModel.add(
+                                        new RatingViewModel(userRating.getId(), userRating.getAssessor().getName(), userRating.getComment(), userRating.getStars(), userRating.getAssessor().getAvatar()));
+                            }
+                            pageComment++;
+                            setAdapterForListComment();
+                        }
+                    } else {
+                        showToast(response.body().getMessage(), Toast.LENGTH_LONG);
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GetRatingResult> call, Throwable t) {
+                    showToast("Có lỗi xảy ra, vui lòng kiểm tra lại mạng và đăng nhập lại", Toast.LENGTH_LONG);
+                }
+            });
+
         }
+    }
+
+    private void setAdapterForListComment(){
+        ListReviewAdapter listReviewAdapter = new ListReviewAdapter(listRatingViewModel, getActivity());
+        listRating.setAdapter(listReviewAdapter);
     }
 
     private ArrayList<String> buildListImageURL(){

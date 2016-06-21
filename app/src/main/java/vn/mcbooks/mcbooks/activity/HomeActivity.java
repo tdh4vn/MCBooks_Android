@@ -16,6 +16,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -36,6 +37,9 @@ import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,8 +47,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.eventbus.OpenBookDetailEvent;
 import vn.mcbooks.mcbooks.fragment.AboutMCBooksFragment;
 import vn.mcbooks.mcbooks.fragment.BaseFragment;
+import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
 import vn.mcbooks.mcbooks.fragment.FavoriteFragment;
 import vn.mcbooks.mcbooks.fragment.HomeFragment;
 import vn.mcbooks.mcbooks.fragment.MoreBooksFragment;
@@ -57,6 +63,7 @@ import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.IReloadData;
 import vn.mcbooks.mcbooks.intef.ITabLayoutManager;
 import vn.mcbooks.mcbooks.intef.IToolBarController;
+import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.Category;
 import vn.mcbooks.mcbooks.model.GetBookResult;
 import vn.mcbooks.mcbooks.model.GetCategoriesResult;
@@ -78,7 +85,8 @@ public class HomeActivity extends BaseActivity
         IReloadData,
         ILogout,
         IToolBarController,
-        IBottomNavigationController {
+        IBottomNavigationController{
+    public static final int REQUEST_CODE = 1;
     public static final int MENU_ABOUT = 0;
     public static final int MENU_LOGOUT = 1;
     public static final int MENU_CALL_MCBOOKS = 2;
@@ -108,6 +116,26 @@ public class HomeActivity extends BaseActivity
     private boolean comingBooksReady = false;
     ProgressDialog progressDialog;
     List<Category> categories = new ArrayList<>();
+
+    //---data
+    private Book bookDetail = null;
+    private boolean isShowDetail = false;
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (isShowDetail){
+            BookDetailFragment bookDetailFragment
+                    = BookDetailFragment.create(bookDetail, bookDetail.getCategories().get(0).getName());
+            this.openFragment(bookDetailFragment, false);
+            isShowDetail = false;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -454,6 +482,8 @@ public class HomeActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home, menu);
+        menu.getItem(1).setVisible(false);
+        menu.getItem(0).setVisible(false);
         return true;
     }
 
@@ -462,12 +492,23 @@ public class HomeActivity extends BaseActivity
         int id = item.getItemId();
         if (id == R.id.action_search) {
             Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, REQUEST_CODE);
             overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_CODE){
+            if (resultCode == AppCompatActivity.RESULT_OK){
+                bookDetail = (Book) data.getSerializableExtra("BOOK");
+                isShowDetail = true;
+                isShowDetail = true;
+            }
+        }
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
@@ -572,7 +613,6 @@ public class HomeActivity extends BaseActivity
         }
     }
 
-
     @Override
     public void openFragment(BaseFragment fragment, boolean onBackstack) {
         if (onBackstack){
@@ -633,4 +673,14 @@ public class HomeActivity extends BaseActivity
             }
         });
     }
+
+    @Override
+    protected void onStop() {
+
+        super.onStop();
+    }
+
+    //--EVENT CENTER
+
+
 }

@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="10dp">
 
     <LinearLayout
@@ -37,18 +38,102 @@
                 android:background="@android:color/darker_gray"/>
 
         </RelativeLayout>
+        <LinearLayout
+            android:id="@+id/frmRating"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_marginTop="5dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/imgAvatar"/>
 
-        <RatingBar
-            android:theme="@style/RatingBar"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="10dp"
-            android:id="@+id/ratingStarComment"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            android:stepSize="0.5"
-            android:rating="3.5"
-            style="@style/Base.Widget.AppCompat.RatingBar"/>
+            <RatingBar
+                android:theme="@style/RatingBar"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dp"
+                android:id="@+id/ratingStarComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:numStars="5"
+                android:stepSize="1"
+                android:rating="5"
+                style="@style/Base.Widget.AppCompat.RatingBar"/>
+            <EditText
+                android:hint="Đánh giá của bạn"
+                android:textAlignment="center"
+                android:id="@+id/edtQuickReview"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:layout_gravity="center_horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <Button
+                    android:id="@+id/btnCancle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Hủy bỏ"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/darker_gray"
+                    android:theme="@style/Base.Widget.AppCompat.Button.Borderless"/>
+                <View
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"/>
+                <Button
+                    android:id="@+id/btnSubmit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xác nhận"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorPrimary"
+                    android:theme="@style/Base.Widget.AppCompat.Button.Borderless"/>
+            </LinearLayout>
+        </LinearLayout>
+        <RelativeLayout
+            android:id="@+id/frmMyComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:id="@+id/imgAvatarMyComment"/>
+            <TextView
+                android:id="@+id/txtUserNameMyComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:text="User Name"
+                android:layout_marginLeft="2dp"
+                android:layout_toEndOf="@id/imgAvatarMyComment"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/txtUserNameMyComment"
+                android:layout_toEndOf="@id/imgAvatarMyComment"
+                android:text="12345"
+                android:id="@+id/ratingStarMyComment"/>
+            <TextView
+                android:layout_toEndOf="@id/ratingStarMyComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="10/2/2016"
+                android:layout_marginLeft="5dp"
+                android:layout_below="@id/txtUserNameMyComment"
+                android:id="@+id/timeComment"/>
+            <TextView
+                android:layout_marginTop="10dp"
+                android:layout_below="@id/ratingStarMyComment"
+                android:layout_toEndOf="@id/imgAvatarMyComment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/yourComment"/>
+        </RelativeLayout>
         <View
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"

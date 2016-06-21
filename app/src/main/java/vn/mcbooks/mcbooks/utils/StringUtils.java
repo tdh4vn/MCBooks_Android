@@ -53,4 +53,20 @@ public class StringUtils {
         return rs;
 
     }
+    public static String ratingLabel(int rate){
+        switch(rate){
+            case 1:
+                return "&#xF005;&#xf006;&#xf006;&#xf006;&#xf006;";
+            case 2:
+                return "&#xF005;&#xf005;&#xf006;&#xf006;&#xf006;";
+            case 3:
+                return "&#xF005;&#xf005;&#xf005;&#xf006;&#xf006;";
+            case 4:
+                return "&#xF005;&#xf005;&#xf005;&#xf005;&#xf006;";
+            case 5:
+                return "&#xF005;&#xf005;&#xf005;&#xf005;&#xf005;";
+            default:
+                return "&#xF006;&#xf006;&#xf006;&#xf006;&#xf006;";
+        }
+    }
 }

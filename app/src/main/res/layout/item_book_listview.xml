@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="10dp"
+    android:id="@+id/contentPanel">
+    <ImageView
+        android:id="@+id/iconBook"
+        android:layout_marginLeft="10dp"
+        android:layout_width="60dp"
+        android:layout_height="80dp" />
+    <TextView
+        android:id="@+id/txtBookName"
+        android:layout_toEndOf="@id/iconBook"
+        android:layout_marginLeft="10dp"
+        android:textSize="16sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Listening phrase 1"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/txtPriceBook"
+        android:layout_centerVertical="true"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:layout_alignParentRight="true"
+        android:text="150.000d" />
+    <RatingBar
+        android:numStars="5"
+        style="@style/Base.Widget.AppCompat.RatingBar.Small"
+        android:layout_marginLeft="10dp"
+        android:layout_toEndOf="@id/iconBook"
+        android:layout_below="@id/txtBookName"
+        android:layout_marginTop="5dp"
+        android:id="@+id/ratingStar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+</RelativeLayout>

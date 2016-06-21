@@ -4,9 +4,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".activity.HomeActivity">
     <item
+        android:id="@+id/action_list"
+        android:title="Tim Kiem"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_list_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_grid"
+        android:title="Tim Kiem"
+        android:orderInCategory="200"
+        android:icon="@drawable/ic_view_module_black_24dp"
+        app:showAsAction="ifRoom" />
+    <item
         android:id="@+id/action_search"
         android:title="Tim Kiem"
         android:orderInCategory="200"
         android:icon="@drawable/ic_search_white_24px"
         app:showAsAction="ifRoom" />
+
 </menu>

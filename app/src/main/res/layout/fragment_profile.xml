@@ -1,7 +1,9 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragment.ProfileFragment">
 
     <LinearLayout
@@ -14,20 +16,22 @@
             android:layout_width="match_parent"
             android:background="@color/colorPrimary"
             android:layout_height="wrap_content">
-            <ImageView
+            <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/img_avatar"
                 android:layout_centerHorizontal="true"
                 android:layout_width="100dp"
-                android:layout_height="100dp" />
+                android:layout_height="100dp"
+                app:civ_border_width="2dp"
+                app:civ_border_color="#FFFFFF"/>
         </RelativeLayout>
         <EditText
-            android:layout_marginTop="64dp"
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="dump"
+            android:text=""
+            android:inputType="text"
             android:id="@+id/txtName"/>
         <EditText
             android:layout_marginLeft="32dp"
@@ -35,7 +39,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="dump"
+            android:text=""
+            android:inputType="textEmailAddress"
             android:id="@+id/txtEmail"/>
         <EditText
             android:layout_marginLeft="32dp"
@@ -43,11 +48,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:text="dump"
+            android:hint="@string/so_dien_thoai"
+            android:inputType="phone"
             android:id="@+id/txtPhone"/>
 
 
         <Button
+            android:id="@+id/btnSubmit"
             android:layout_marginTop="32dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -56,8 +63,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@android:color/white"
-            android:text="LƯU THÔNG TIN"
+            android:text="@string/save_infomation"
             android:background="@drawable/blue_border"/>
     </LinearLayout>
 
-</FrameLayout>
+</LinearLayout>

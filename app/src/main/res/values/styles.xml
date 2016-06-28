@@ -16,9 +16,11 @@
         <item name="colorAccent">@android:color/white</item>
         <item name="tabIndicatorColor">@android:color/white</item>
     </style>
+
     <style name="AppTheme.NoTitle" parent="AppTheme.NoActionBar">
         <item name="android:windowNoTitle">true</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
@@ -32,13 +34,16 @@
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:seekBarStyle">@style/Widget.AppCompat.SeekBar.SeekBarWhite</item>
     </style>
+
     <style name="Widget.AppCompat.SeekBar.SeekBarWhite">
 
     </style>
+
     <style name="RatingBar" parent="Theme.AppCompat">
         <item name="colorControlNormal">#FDD835</item>
         <item name="colorControlActivated">#FFEB3B</item>
     </style>
+
     <style name="NavigationTab" parent="Widget.Design.TabLayout">
         <item name="tabBackground">@color/colorPrimary</item>
         <item name="tabSelectedTextColor">@android:color/white</item>

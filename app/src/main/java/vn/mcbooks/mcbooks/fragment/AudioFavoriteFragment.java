@@ -36,7 +36,7 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AudioFavoriteFragment extends BaseFragment {
+public class AudioFavoriteFragment extends Fragment {
 
     ListView listViewMedia;
 
@@ -76,7 +76,7 @@ public class AudioFavoriteFragment extends BaseFragment {
                         @Override
                         public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
                             if (response.body().getCode() != 1){
-                                showToast(response.body().getMessage(), Toast.LENGTH_LONG);
+                                Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_LONG).show();
                             } else {
                                 Log.d("TG",response.body().getResult().getId());
                                 Intent intent = new Intent(getActivity(), AudioPlayerActivity.class);
@@ -87,7 +87,7 @@ public class AudioFavoriteFragment extends BaseFragment {
 
                         @Override
                         public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
-                            showToast("Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG);
+                            Toast.makeText(getActivity(),"Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG).show();
                         }
                     });
                 }

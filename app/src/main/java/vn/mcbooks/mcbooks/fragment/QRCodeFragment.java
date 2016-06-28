@@ -15,11 +15,15 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
 
 import java.io.IOException;
 
@@ -29,6 +33,8 @@ import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.dialog.SaleOffsDialog;
 import vn.mcbooks.mcbooks.dialog.ShortReviewBookDialog;
+import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
+import vn.mcbooks.mcbooks.eventbus.SetIsReadyQRCodeEvent;
 import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.model.GetBookByIDResult;
@@ -58,8 +64,15 @@ public class QRCodeFragment extends BaseFragment {
 
 
     @Override
+    public void onStop() {
+        EventBus.getDefault().unregister(this);
+        super.onStop();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        EventBus.getDefault().register(this);
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_qrcode, container, false);
         initView(view);
@@ -77,6 +90,7 @@ public class QRCodeFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
+        EventBus.getDefault().post(new SetBottomBarPosition(2));
 //        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
 //        bottomNavigationController.setCurrentOfBottomNavigation(2);
         buildBarcodeDetector();
@@ -129,7 +143,6 @@ public class QRCodeFragment extends BaseFragment {
             public void receiveDetections(Detector.Detections<Barcode> detections) {
                 if (!isResultBarcode){
                     final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-
                     if (barcodes.size() != 0) {
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
@@ -141,7 +154,6 @@ public class QRCodeFragment extends BaseFragment {
                         });
                     }
                 }
-
             }
         });
 
@@ -155,6 +167,7 @@ public class QRCodeFragment extends BaseFragment {
     private void getBookByBarcode(String barcode){
 
         progressDialogScaning.show();
+        progressDialogScaning.setCancelable(true);
 
         GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
         Call<GetBookByIDResult> getBookByIDResultCall
@@ -162,9 +175,17 @@ public class QRCodeFragment extends BaseFragment {
         getBookByIDResultCall.enqueue(new Callback<GetBookByIDResult>() {
             @Override
             public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
-                progressDialogScaning.dismiss();
-                ShortReviewBookDialog shortReviewBookDialog = ShortReviewBookDialog.create(response.body().getResult());
-                ((IOpenFragment)getActivity()).openDialogFragment(shortReviewBookDialog);
+                if (response.body().getCode() == 1){
+                    Log.d("Khong ro", "abcs2");
+                    progressDialogScaning.dismiss();
+                    ShortReviewBookDialog shortReviewBookDialog = ShortReviewBookDialog.create(response.body().getResult());
+                    ((IOpenFragment)getActivity()).openDialogFragment(shortReviewBookDialog);
+                } else {
+                    Log.d("Khong ro", response.body().getCode() + "");
+                    progressDialogScaning.dismiss();
+                    isResultBarcode = false;
+                    showToast(response.body().getMessage(), Toast.LENGTH_LONG);
+                }
             }
 
             @Override
@@ -180,5 +201,12 @@ public class QRCodeFragment extends BaseFragment {
     public void onPause() {
         super.onPause();
         cameraSource.stop();
+    }
+
+
+    // This method will be called when a HelloWorldEvent is posted
+    @Subscribe
+    public void onEvent(SetIsReadyQRCodeEvent event){
+        isResultBarcode = event.isReady();
     }
 }

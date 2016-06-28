@@ -5,17 +5,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
-import com.lapism.searchview.SearchView;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.util.ArrayList;
 
@@ -23,11 +19,8 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
-import vn.mcbooks.mcbooks.adapter.AdPageAdapter;
-import vn.mcbooks.mcbooks.adapter.ListBookSearchResultAdapter;
-import vn.mcbooks.mcbooks.eventbus.OpenBookDetailEvent;
+import vn.mcbooks.mcbooks.adapter.ListBookHorizontalAdapter;
 import vn.mcbooks.mcbooks.model.Book;
-import vn.mcbooks.mcbooks.model.GetBookResult;
 import vn.mcbooks.mcbooks.model.SearchResult;
 import vn.mcbooks.mcbooks.network_api.SearchServices;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
@@ -87,19 +80,25 @@ public class SearchActivity extends AppCompatActivity
                         SearchActivity.this.runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                Call<SearchResult> getBookResultCall
-                                        = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, txtSearchBar.getText().toString());
+                                Call<SearchResult> getBookResultCall;
+                                if (txtSearchBar.getText().toString().equals("") || txtSearchBar.getText().toString() == null ){
+                                    Log.d("Search", "asdasd");
+                                    getBookResultCall
+                                            = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, "null_rong");
+                                } else {
+                                    getBookResultCall
+                                            = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, txtSearchBar.getText().toString());
+                                }
                                 getBookResultCall.enqueue(new Callback<SearchResult>() {
                                     @Override
                                     public void onResponse(Call<SearchResult> call, Response<SearchResult> response) {
                                         if (response.body().getCode() == 1){
-                                            ListBookSearchResultAdapter listBookSearchResultAdapter
-                                                    = new ListBookSearchResultAdapter((ArrayList<Book>) response.body().getResult().getBooks(), SearchActivity.this);
+                                            ListBookHorizontalAdapter listBookSearchResultAdapter
+                                                    = new ListBookHorizontalAdapter((ArrayList<Book>) response.body().getResult().getBooks(), SearchActivity.this);
                                             listView.setAdapter(listBookSearchResultAdapter);
                                         } else {
                                             Toast.makeText(SearchActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
                                         }
-
                                     }
 
                                     @Override
@@ -130,6 +129,12 @@ public class SearchActivity extends AppCompatActivity
             default:
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        this.finish();
     }
 
     @Override

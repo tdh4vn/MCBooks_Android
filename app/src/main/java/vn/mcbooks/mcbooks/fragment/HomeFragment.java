@@ -11,15 +11,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ScrollView;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.DefaultSliderView;
+import com.github.barteksc.pdfviewer.ScrollBar;
+
+import org.greenrobot.eventbus.EventBus;
 
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.AdPageAdapter;
 import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
+import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
 import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.IReloadData;
@@ -32,6 +37,8 @@ import vn.mcbooks.mcbooks.singleton.ContentManager;
 public class HomeFragment extends BaseFragment
         implements IReloadData.ILoadDataCompleteCallBack,
                     View.OnClickListener{
+
+
     public static final String NAME = HomeFragment.class.toString();
 
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -39,6 +46,9 @@ public class HomeFragment extends BaseFragment
     private SliderLayout sliderAd;
 
     //-----------Data
+
+
+    private int[] saveState = new int[2];
     private Result dataLoginResult;
 
     //-----------RecyclerView
@@ -53,6 +63,8 @@ public class HomeFragment extends BaseFragment
     private Button btnMoreComingBook;
     //private ViewPager pagerForAd;
 
+    private ScrollView scrollView;
+
     public void setDataLoginResult(Result dataLoginResult) {
         this.dataLoginResult = dataLoginResult;
     }
@@ -60,6 +72,12 @@ public class HomeFragment extends BaseFragment
     public void setiReloadData(IReloadData iReloadData) {
         this.iReloadData = iReloadData;
     }
+
+    public IReloadData getiReloadData() {
+        return iReloadData;
+    }
+
+
 
     public HomeFragment() {
     }
@@ -80,15 +98,14 @@ public class HomeFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-//        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
-//        bottomNavigationController.setCurrentOfBottomNavigation(0);
+        EventBus.getDefault().post(new SetBottomBarPosition(0));
         IToolBarController toolBarController = (IToolBarController)getActivity();
         toolBarController.setVisibilityForTitles(View.GONE);
         toolBarController.changeTitles("");
         toolBarController.setVisibilityForLogo(View.VISIBLE);
-        //AdPageAdapter adPageAdapter = new AdPageAdapter(getActivity().getSupportFragmentManager());
-         //pagerForAd.setAdapter(adPageAdapter);
-      }
+    }
+
+
 
     public void initView(View view){
         swipeRefreshLayout = (SwipeRefreshLayout)view.findViewById(R.id.swipe_reload_data);
@@ -103,6 +120,8 @@ public class HomeFragment extends BaseFragment
         //pagerForAd = (ViewPager)view.findViewById(R.id.listAd);
         sliderAd = (SliderLayout) view.findViewById(R.id.listAd);
         createSlider();
+        scrollView = (ScrollView) view.findViewById(R.id.scrollViewHome);
+
 
         recyclerViewHotBook = (RecyclerView)view.findViewById(R.id.listBookHotSeller);
         recyclerViewNewBook = (RecyclerView)view.findViewById(R.id.listBooksNew);
@@ -113,8 +132,9 @@ public class HomeFragment extends BaseFragment
         btnMoreNewBook.setOnClickListener(this);
         btnMoreComingBook = (Button) view.findViewById(R.id.btnBooksInRelease);
         btnMoreComingBook.setOnClickListener(this);
-
     }
+
+
 
     private void createSlider(){
         DefaultSliderView sliderView1 = new DefaultSliderView(getActivity());
@@ -207,8 +227,25 @@ public class HomeFragment extends BaseFragment
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        if (scrollView != null){
+            scrollView.setScrollX(saveState[0]);
+            scrollView.setScrollY(saveState[1]);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveState[0] = scrollView.getScrollX();
+        saveState[1] = scrollView.getScrollY();
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         outState.putSerializable("DATA", dataLoginResult);
+
         super.onSaveInstanceState(outState);
     }
 
@@ -223,6 +260,7 @@ public class HomeFragment extends BaseFragment
         adapterForNewBookList.notifyDataSetChanged();
         swipeRefreshLayout.setRefreshing(false);
     }
+
 
 
     @Override

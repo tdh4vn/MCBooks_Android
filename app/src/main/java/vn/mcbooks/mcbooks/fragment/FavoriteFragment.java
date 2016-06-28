@@ -10,10 +10,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.greenrobot.eventbus.EventBus;
+
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.FavoriteViewPagerAdapter;
-import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
-import vn.mcbooks.mcbooks.intef.ITabLayoutManager;
+import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
 import vn.mcbooks.mcbooks.intef.IToolBarController;
 
 /**
@@ -24,6 +25,8 @@ public class FavoriteFragment extends BaseFragment {
     //ITabLayoutManager tabLayoutManager;
     ViewPager viewPager;
     TabLayout tabLayout;
+    View rootView;
+    private FavoriteViewPagerAdapter favoriteViewPagerAdapter;
 
     public static FavoriteFragment create(){
         FavoriteFragment favoriteFragment = new FavoriteFragment();
@@ -31,15 +34,14 @@ public class FavoriteFragment extends BaseFragment {
     }
 
     public FavoriteFragment() {
-
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
-        initView(rootView);
+        rootView = inflater.inflate(R.layout.fragment_favorite, container, false);
+        initView();
         return rootView;
     }
 
@@ -53,18 +55,21 @@ public class FavoriteFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-//        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
-//        bottomNavigationController.setCurrentOfBottomNavigation(3);
+        EventBus.getDefault().post(new SetBottomBarPosition(3));
+        Log.d("FavoriteFragment", "onResume");
+        //initView();
+        favoriteViewPagerAdapter.notifyDataSetChanged();
         IToolBarController toolBarController = (IToolBarController)getActivity();
         toolBarController.setVisibilityForTitles(View.GONE);
         toolBarController.changeTitles("");
         toolBarController.setVisibilityForLogo(View.VISIBLE);
     }
 
-    private void initView(View rootView) {
+    private void initView() {
         viewPager = (ViewPager) rootView.findViewById(R.id.viewPager);
-        viewPager.setAdapter(new FavoriteViewPagerAdapter(getActivity().getSupportFragmentManager()));
         tabLayout = (TabLayout) rootView.findViewById(R.id.tabLayout);
+        favoriteViewPagerAdapter = new FavoriteViewPagerAdapter(getChildFragmentManager());
+        viewPager.setAdapter(favoriteViewPagerAdapter);
         controlViewPager();
     }
 
@@ -86,9 +91,7 @@ public class FavoriteFragment extends BaseFragment {
 
             }
         });
-
     }
-
 
 
     @Override
@@ -102,5 +105,11 @@ public class FavoriteFragment extends BaseFragment {
         super.onStop();
         Log.d("FavoriteFragment", "onStop");
         //tabLayoutManager.getTabLayout().setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("FavoriteFragment", "onDestroy");
     }
 }

@@ -1,11 +1,13 @@
 package vn.mcbooks.mcbooks.dialog;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +17,15 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.util.List;
 
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.activity.AudioPlayerActivity;
 import vn.mcbooks.mcbooks.activity.BaseActivity;
 import vn.mcbooks.mcbooks.activity.YoutubePlayerActivity;
+import vn.mcbooks.mcbooks.eventbus.SetIsReadyQRCodeEvent;
 import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
 import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.Media;
@@ -113,5 +118,12 @@ public class ShortReviewBookDialog extends DialogFragment implements View.OnClic
             }
         }
         return  countMedia;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        EventBus.getDefault().post(new SetIsReadyQRCodeEvent(false));
+        Log.d("ABDS","asdasdas");
+        super.onCancel(dialog);
     }
 }

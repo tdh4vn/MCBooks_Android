@@ -1,96 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="vn.mcbooks.mcbooks.fragment.BookDetailFragment">
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
+        android:id="@+id/scrollViewBookDetail"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <include
-            android:id="@+id/header"
-            layout="@layout/fragment_book_detail_header" />
+        android:layout_height="match_parent"
+        android:descendantFocusability="beforeDescendants"
+        android:focusableInTouchMode="true"
+        android:background="@color/background_color">
         <LinearLayout
-            android:id="@+id/tmp_buttons"
-            android:paddingLeft="10dp"
-            android:paddingRight="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <Button
-                android:id="@+id/btnBuy"
-                android:layout_marginBottom="2dp"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:text="MUA SÁCH"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:background="@drawable/background_blue"/>
+            <include
+                android:id="@+id/header"
+                layout="@layout/fragment_book_detail_header" />
             <LinearLayout
-                android:layout_marginTop="2dp"
-                android:orientation="horizontal"
+                android:id="@+id/tmp_buttons"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:orientation="vertical"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1">
+                android:layout_height="match_parent">
                 <Button
-                    android:id="@+id/btnVideo"
-                    android:layout_marginRight="2dp"
-                    android:layout_width="0dp"
+                    android:id="@+id/btnBuy"
+                    android:layout_marginBottom="2dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Video"
-                    android:textAllCaps="false"
+                    android:text="@string/buy_book"
+                    android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:background="@drawable/button_stoke"/>
-                <Button
-                    android:id="@+id/btnAudio"
-                    android:layout_marginLeft="2dp"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:layout_width="0dp"
-                    android:layout_weight="1"
-                    android:layout_height="wrap_content"
-                    android:text="Audio"
-                    android:textAllCaps="false"
-                    android:textStyle="bold"
-                    android:background="@drawable/button_stoke"/>
+                    android:textColor="@android:color/white"
+                    android:background="@drawable/background_blue"/>
+                <LinearLayout
+                    android:layout_marginTop="2dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1">
+                    <Button
+                        android:id="@+id/btnVideo"
+                        android:layout_marginRight="2dp"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Video"
+                        android:textAllCaps="false"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/holo_blue_dark"
+                        android:background="@drawable/button_stoke"/>
+                    <Button
+                        android:id="@+id/btnAudio"
+                        android:layout_marginLeft="2dp"
+                        android:textColor="@android:color/holo_blue_dark"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Audio"
+                        android:textAllCaps="false"
+                        android:textStyle="bold"
+                        android:background="@drawable/button_stoke"/>
+                </LinearLayout>
             </LinearLayout>
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thông tin sản phẩm"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/txtDescription"
+                    android:layout_marginTop="10dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn..."
+                    android:freezesText="true"/>
+                <Button
+                    android:id="@+id/btnReadMore"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Xem thêm"
+                    android:textColor="@color/colorPrimary"
+                    style="@style/Base.Widget.AppCompat.Button.Borderless"/>
+            </LinearLayout>
+            <include
+                layout="@layout/fragment_comment"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent" />
         </LinearLayout>
-        <LinearLayout
-            android:orientation="vertical"
-            android:padding="10dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Thông tin sản phẩm"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-            <TextView
-                android:id="@+id/txtDescription"
-                android:layout_marginTop="10dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn..."
-                android:freezesText="true"/>
-            <Button
-                android:id="@+id/btnReadMore"
-                android:layout_gravity="center_horizontal"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Xem thêm"
-                android:textColor="@color/colorPrimary"
-                style="@style/Base.Widget.AppCompat.Button.Borderless"/>
-        </LinearLayout>
-        <include
-            layout="@layout/fragment_comment"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent" />
-    </LinearLayout>
 
-</ScrollView>
+    </ScrollView>
+</RelativeLayout>

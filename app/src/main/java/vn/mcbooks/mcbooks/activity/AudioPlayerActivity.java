@@ -1,6 +1,7 @@
 package vn.mcbooks.mcbooks.activity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -232,7 +233,7 @@ public class AudioPlayerActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.home, menu);
+        getMenuInflater().inflate(R.menu.menu_player, menu);
         return true;
     }
     private void initView() {
@@ -333,6 +334,8 @@ public class AudioPlayerActivity extends BaseActivity
         }
         return true;
     }
+
+
 
     @Override
     protected void onResume() {

@@ -11,4 +11,6 @@
     <color name="rounded_container_border">#3b3f44</color>
     <color name="light_gray_header_color">#646663</color>
     <color name="selected">#90CAF9</color>
+    <color name="star_color">#f5b53b</color>
+    <color name="background_color">#eeeeee</color>
 </resources>

@@ -2,6 +2,7 @@ package vn.mcbooks.mcbooks.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatDelegate;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +29,10 @@ import vn.mcbooks.mcbooks.model.Video;
 
 public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         YouTubePlayer.OnInitializedListener{
+    static
+    {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+    }
     public static final String BOOK_KEY = "BOOK";
     private int index = 0;
     private boolean isFullScreen = false;
@@ -75,7 +80,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         for (Media media : mBook.getMedias()){
             if (media.getType() == Media.VIDEO_TYPE){
                 Video video = new Video();
-                video.setId(media.getId());
+                video.setIdInServer(media.getId());
                 video.setUrl(media.getUrl());
                 video.setName(media.getName());
                 Log.d("HUNG",video.getUrl().split("v=").length + "");
@@ -126,6 +131,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         }
         //super.onBackPressed();
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

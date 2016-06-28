@@ -27,6 +27,7 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
 public class ContentManager {
     private String token;
     private Result result;
+    private UserModel user = new UserModel();
     private static ContentManager ourInstance = new ContentManager();
 
     private ArrayList<Book> listBookFavorite = new ArrayList<>();
@@ -71,6 +72,31 @@ public class ContentManager {
             }
         }
         return false;
+    }
+
+    public void addListBookToFavorite(List<Book> books){
+        ArrayList<Book> listBookAfterFilter = new ArrayList<>();
+        for (Book newBook : books){
+            boolean isOldBook = false;
+            for (Book oldBook : listBookFavorite){
+                if (oldBook.getId().equals(newBook.getId())){
+                    isOldBook = true;
+                    break;
+                }
+            }
+            if (!isOldBook){
+                listBookAfterFilter.add(newBook);
+            }
+        }
+        listBookFavorite.addAll(listBookAfterFilter);
+    }
+
+    public UserModel getUser() {
+        return user;
+    }
+
+    public void setUser(UserModel user) {
+        this.user = user;
     }
 
     public void removeBookInFavorite(String id){
@@ -121,7 +147,7 @@ public class ContentManager {
         getMediaInFavoriteByPage(favoriteServices);
     }
 
-    void getMediaInFavoriteByPage(final FavoriteServices favoriteServices){
+    private void getMediaInFavoriteByPage(final FavoriteServices favoriteServices){
         Call<GetMediaFavoriteResult> getBookResultCall =  favoriteServices.getMediaFavorite(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), pageMediaFavorite);
         getBookResultCall.enqueue(new Callback<GetMediaFavoriteResult>() {
             @Override
@@ -170,5 +196,9 @@ public class ContentManager {
             }
         }
         return listVideo;
+    }
+    public void resetContent(){
+        listBookFavorite = new ArrayList<>();
+        listMediaFavorite = new ArrayList<>();
     }
 }

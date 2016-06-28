@@ -50,7 +50,7 @@
                    android:layout_centerHorizontal="true"
                    android:layout_width="50dp"
                    android:layout_height="50dp"
-                   android:src="@drawable/music_player"/>
+                   app:srcCompat="@drawable/music_player"/>
 
                <RelativeLayout
                    android:id="@+id/tmp_controller"
@@ -74,17 +74,16 @@
                        android:layout_toEndOf="@id/txtCurrentTime"
                        android:layout_toStartOf="@id/txtMaxTime"
                        android:id="@+id/progress_media"
-                       android:thumb="@drawable/circle"
                        android:layout_width="match_parent"
                        android:layout_height="wrap_content"
-                       android:layout_alignParentTop="true"/>
+                       android:layout_alignParentTop="true" />
                    <ImageButton
                        android:id="@+id/btnPlay"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:layout_centerHorizontal="true"
                        android:layout_centerVertical="true"
-                       android:src="@drawable/ic_play_arrow_white_48px"
+                       app:srcCompat="@drawable/ic_play_arrow_white_48px"
                        android:background="@android:color/transparent"/>
                    <ImageButton
                        android:id="@+id/btnPrevious"
@@ -93,7 +92,7 @@
                        android:layout_marginRight="30dp"
                        android:layout_toStartOf="@id/btnPlay"
                        android:layout_centerVertical="true"
-                       android:src="@drawable/ic_skip_previous_white_24px"
+                       app:srcCompat="@drawable/ic_skip_previous_white_24px"
                        android:background="@android:color/transparent"/>
 
                    <ImageButton
@@ -103,7 +102,7 @@
                        android:layout_marginLeft="30dp"
                        android:layout_toEndOf="@id/btnPlay"
                        android:layout_centerVertical="true"
-                       android:src="@drawable/ic_skip_next_white_24px"
+                       app:srcCompat="@drawable/ic_skip_next_white_24px"
                        android:background="@android:color/transparent"/>
                    <ImageButton
                        android:layout_centerVertical="true"
@@ -112,7 +111,7 @@
                        android:id="@+id/repeat"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
-                       android:src="@drawable/ic_repeat_white_36px"
+                       app:srcCompat="@drawable/ic_repeat_white_36px"
                        android:background="@android:color/transparent" />
                </RelativeLayout>
 

@@ -7,10 +7,19 @@ import com.google.gson.annotations.SerializedName;
  * Created by hungtran on 6/1/16.
  */
 public class Video {
+    private String idInServer;
     private String id;
     private String name;
     private String url;
     private String idVideo;
+
+    public String getIdInServer() {
+        return idInServer;
+    }
+
+    public void setIdInServer(String idInServer) {
+        this.idInServer = idInServer;
+    }
 
     public String getId() {
         return id;

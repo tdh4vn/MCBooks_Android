@@ -10,6 +10,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 import vn.mcbooks.mcbooks.model.BaseResult;
 import vn.mcbooks.mcbooks.model.GetRatingResult;
+import vn.mcbooks.mcbooks.model.RatingBookResult;
 
 /**
  * Created by hungtran on 6/21/16.
@@ -17,7 +18,7 @@ import vn.mcbooks.mcbooks.model.GetRatingResult;
 public interface RatingServices {
     @FormUrlEncoded
     @POST("api/books/{book_id}/ratings")
-    Call<BaseResult> ratingBookByID(@Header("Authorization") String token, @Path("book_id") String bookID, @Field("stars") int starts, @Field("comment") String comment);
+    Call<RatingBookResult> ratingBookByID(@Header("Authorization") String token, @Path("book_id") String bookID, @Field("stars") int starts, @Field("comment") String comment);
 
     @GET("api/books/{book_id}/ratings")
     Call<GetRatingResult> getRatingBookByID(@Header("Authorization") String token, @Path("book_id") String bookID, @Query("page") int page);

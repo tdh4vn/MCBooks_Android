@@ -9,8 +9,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.activity.LoginActivity;
 import vn.mcbooks.mcbooks.adapter.BookInHomeAdapter;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.listener.RecyclerItemClickListener;
@@ -20,11 +22,9 @@ import vn.mcbooks.mcbooks.utils.EndlessRecyclerViewScrollListener;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class FavoriteBooksFragment extends BaseFragment {
-
+public class FavoriteBooksFragment extends Fragment {
     RecyclerView recyclerViewBook;
     BookInHomeAdapter bookInHomeAdapter;
-
 
     public FavoriteBooksFragment() {
         // Required empty public constructor
@@ -33,7 +33,10 @@ public class FavoriteBooksFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        Log.d("FBF", "onResume");
+        updateUI();
+    }
+    public void updateUI(){
         bookInHomeAdapter.setListBook(ContentManager.getInstance().getListBookFavorite());
         bookInHomeAdapter.setmContext(getActivity());
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getActivity(), 3);
@@ -59,6 +62,7 @@ public class FavoriteBooksFragment extends BaseFragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_favorite_books, container, false);
         initView(rootView);
+        Log.d("FBF", "onCreate");
         return rootView;
     }
 

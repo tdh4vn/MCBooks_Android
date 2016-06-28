@@ -1,6 +1,7 @@
 package vn.mcbooks.mcbooks.model;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by hungtran on 6/21/16.
@@ -11,16 +12,18 @@ public class RatingViewModel implements Serializable{
     private String comment;
     private int stars;
     private String avatar;
+    private Date timeRating;
 
     public RatingViewModel() {
     }
 
-    public RatingViewModel(String id, String name, String comment, int stars, String avatar) {
+    public RatingViewModel(String id, String name, String comment, int stars, String avatar, Date date) {
         this.id = id;
         this.name = name;
         this.comment = comment;
         this.stars = stars;
         this.avatar = avatar;
+        this.timeRating = date;
     }
 
     public String getId() {
@@ -61,5 +64,13 @@ public class RatingViewModel implements Serializable{
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public Date getTimeRating() {
+        return timeRating;
+    }
+
+    public void setTimeRating(Date timeRating) {
+        this.timeRating = timeRating;
     }
 }

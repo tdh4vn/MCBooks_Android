@@ -1,5 +1,8 @@
 package vn.mcbooks.mcbooks.utils;
 
+import android.content.Context;
+
+import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.model.Information;
 
 /**
@@ -67,6 +70,23 @@ public class StringUtils {
                 return "&#xF005;&#xf005;&#xf005;&#xf005;&#xf005;";
             default:
                 return "&#xF006;&#xf006;&#xf006;&#xf006;&#xf006;";
+        }
+    }
+
+    public static String ratingLabel(int rate, Context mContext){
+        switch(rate){
+            case 1:
+                return mContext.getString(R.string.star_1);
+            case 2:
+                return mContext.getString(R.string.star_2);
+            case 3:
+                return mContext.getString(R.string.star_3);
+            case 4:
+                return mContext.getString(R.string.star_4);
+            case 5:
+                return mContext.getString(R.string.star_5);
+            default:
+                return mContext.getString(R.string.star_0);
         }
     }
 }

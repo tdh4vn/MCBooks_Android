@@ -30,7 +30,7 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class VideoFavoriteFragment extends BaseFragment {
+public class VideoFavoriteFragment extends Fragment {
 
     ListView listView;
     public VideoFavoriteFragment() {
@@ -56,26 +56,31 @@ public class VideoFavoriteFragment extends BaseFragment {
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    MediaInBook mediaInBook = ContentManager.getInstance().getListVideoFavorite().get(position);
-                    GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
-                    Call<GetBookByIDResult> call = getBookService.getBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mediaInBook.getBook().getId());
-                    call.enqueue(new Callback<GetBookByIDResult>() {
-                        @Override
-                        public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
-                            if (response.body().getCode() != 1){
-                                showToast(response.body().getMessage(), Toast.LENGTH_LONG);
-                            } else {
-                                Bundle bundle = new Bundle();
-                                bundle.putSerializable(YoutubePlayerActivity.BOOK_KEY, response.body().getResult());
-                                ((BaseActivity)getActivity()).openActivity(YoutubePlayerActivity.class, bundle);
+                    try{
+                        MediaInBook mediaInBook = ContentManager.getInstance().getListVideoFavorite().get(position);
+                        GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
+                        Call<GetBookByIDResult> call = getBookService.getBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mediaInBook.getBook().getId());
+                        call.enqueue(new Callback<GetBookByIDResult>() {
+                            @Override
+                            public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
+                                if (response.body().getCode() != 1){
+                                    Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_LONG).show();
+                                } else {
+                                    Bundle bundle = new Bundle();
+                                    bundle.putSerializable(YoutubePlayerActivity.BOOK_KEY, response.body().getResult());
+                                    ((BaseActivity)getActivity()).openActivity(YoutubePlayerActivity.class, bundle);
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
-                            showToast("Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG);
-                        }
-                    });
+                            @Override
+                            public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
+                                Toast.makeText(getActivity(),"Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                    } catch (Exception e){
+                        Toast.makeText(getActivity(), "Có lỗi xảy ra", Toast.LENGTH_LONG);
+                    }
+
                 }
             });
         }

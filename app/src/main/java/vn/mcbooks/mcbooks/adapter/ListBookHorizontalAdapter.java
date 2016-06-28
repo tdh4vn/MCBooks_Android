@@ -23,13 +23,13 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
 /**
  * Created by hungtran on 6/22/16.
  */
-public class ListBookSearchResultAdapter extends BaseAdapter{
+public class ListBookHorizontalAdapter extends BaseAdapter{
     private ArrayList<Book> listBook;
     private Context mContext;
     private LayoutInflater layoutInflater;
 
-    public ListBookSearchResultAdapter(ArrayList<Book> listRating, Context mContext) {
-        this.listBook = listRating;
+    public ListBookHorizontalAdapter(ArrayList<Book> listBook, Context mContext) {
+        this.listBook = listBook;
         this.mContext = mContext;
         layoutInflater = LayoutInflater.from(mContext);
     }
@@ -74,7 +74,7 @@ public class ListBookSearchResultAdapter extends BaseAdapter{
 
         Picasso.with(mContext).load(APIURL.BaseURL + listBook.get(position).getImage()).into(holder.iconBook);
         holder.txtBookName.setText(listBook.get(position).getName());
-        holder.txtPrice.setText(StringUtils.convertToCurencyUnitStyle(String.valueOf(listBook.get(position).getPrice())));
+        holder.txtPrice.setText(StringUtils.convertToCurencyUnitStyle(String.valueOf(listBook.get(position).getPrice())) + "đ");
         holder.ratingBar.setRating(listBook.get(position).getRatings().getAvgStar());
         return convertView;
     }

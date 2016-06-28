@@ -2,9 +2,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/background_color"
     tools:context="vn.mcbooks.mcbooks.fragment.MoreBooksFragment">
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listbooks"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+    <ListView
+        android:visibility="gone"
+        android:id="@+id/listViewBooks"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
 </FrameLayout>

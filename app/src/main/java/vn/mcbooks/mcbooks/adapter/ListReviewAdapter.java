@@ -2,6 +2,7 @@ package vn.mcbooks.mcbooks.adapter;
 
 import android.content.Context;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,13 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.model.RatingViewModel;
+import vn.mcbooks.mcbooks.network_api.APIURL;
+import vn.mcbooks.mcbooks.utils.AwesomeTextView;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
 /**
@@ -64,21 +68,23 @@ public class ListReviewAdapter extends BaseAdapter {
             holder = new ViewHolder();
             holder.imgAvatar = (ImageView) convertView.findViewById(R.id.imgAvatar);
             holder.txtUsername = (TextView) convertView.findViewById(R.id.txtUsername);
-            holder.txtRaingStars = (TextView) convertView.findViewById(R.id.ratingStar);
+            holder.txtRaingStars = (AwesomeTextView) convertView.findViewById(R.id.ratingStar);
             holder.txtComment = (TextView) convertView.findViewById(R.id.txtComment);
+            holder.timeRate = (TextView) convertView.findViewById(R.id.timeRating);
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-
         Picasso.with(mContext).load(listRating.get(position).getAvatar()).into(holder.imgAvatar);
         holder.txtUsername.setText(listRating.get(position).getName());
         holder.txtComment.setText(listRating.get(position).getComment());
-        holder.txtRaingStars.setText(Html.fromHtml(StringUtils.ratingLabel(listRating.get(position).getStars())));
+        holder.timeRate.setText(new SimpleDateFormat("dd/MM/yyyy").format(listRating.get(position).getTimeRating()));
+        holder.txtRaingStars.setText(StringUtils.ratingLabel(listRating.get(position).getStars(), mContext));
         return convertView;
     }
 
     public class ViewHolder{
+        public TextView timeRate;
         public ImageView imgAvatar;
         public TextView txtUsername;
         public TextView txtRaingStars;

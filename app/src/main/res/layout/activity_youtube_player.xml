@@ -22,13 +22,14 @@
                 android:layout_height="match_parent">
                 <ImageButton
                     android:id="@+id/btn_home"
-                    android:paddingRight="15dp"
                     android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:src="@drawable/ic_arrow_back_white_24dp1"
+                    android:src="@mipmap/ic_arrow_back_white_24dp"
                     android:background="@android:color/transparent"/>
                 <TextView
+                    android:layout_toEndOf="@id/btn_home"
+                    android:layout_alignParentEnd="true"
                     android:id="@+id/titleYoutube"
                     android:layout_marginRight="12dp"
                     android:layout_marginLeft="12dp"

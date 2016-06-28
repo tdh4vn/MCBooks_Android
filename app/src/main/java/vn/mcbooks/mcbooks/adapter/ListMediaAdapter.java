@@ -113,13 +113,10 @@ public class ListMediaAdapter extends BaseAdapter implements View.OnClickListene
         holder.btnDownload.setTag(media);
         Bundle bundle = new Bundle();
         bundle.putInt("POSITION", position);
-        Log.d("HungTD Size", ContentManager.getInstance().getListMediaFavorite().size() + "");
         if (ContentManager.getInstance().checkMediaInFavorite(listMedia.get(position).getId())){
-            Log.d("FUCK","FUCK1");
             holder.btnFavorite.setImageResource(R.drawable.favarite_fill);
             bundle.putBoolean("ADD", true);
         } else {
-            Log.d("FUCK","FUCK2");
             holder.btnFavorite.setImageResource(R.drawable.favorite_stroke);
             bundle.putBoolean("ADD", false);
         }
@@ -173,17 +170,28 @@ public class ListMediaAdapter extends BaseAdapter implements View.OnClickListene
     }
 
     void addOrRemoveMediaFavorite(boolean isAdd, int pos, ImageButton btn){
+
         FavoriteServices favoriteServices = ServiceFactory.getInstance().createService(FavoriteServices.class);
         Call<BaseResult> favoriteCall;
         if (isAdd){
+            Log.d("TRUE", "TRUE");
             favoriteCall = favoriteServices.addMediaToFavorite(StringUtils.tokenBuild(ContentManager.getInstance().getToken()),
                     listMedia.get(pos).getId());
             btn.setImageResource(R.drawable.favarite_fill);
+            Bundle bundle = new Bundle();
+            bundle.putInt("POSITION", pos);
+            bundle.putBoolean("ADD", false);
+            btn.setTag(bundle);
         } else {
+            Log.d("TRUE", "TRUE");
             favoriteCall = favoriteServices.removeMediaInFavorite(StringUtils.tokenBuild(ContentManager.getInstance().getToken()),
                     listMedia.get(pos).getId());
             ContentManager.getInstance().removeMediaInFavorite(listMedia.get(pos).getId());
             btn.setImageResource(R.drawable.favorite_stroke);
+            Bundle bundle = new Bundle();
+            bundle.putInt("POSITION", pos);
+            bundle.putBoolean("ADD", true);
+            btn.setTag(bundle);
         }
         favoriteCall.enqueue(new Callback<BaseResult>() {
             @Override

@@ -11,7 +11,7 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="string_search">Tìm kiếm</string>
-    <string name="login_with_facebook">Đăng Nhập Với Facebook</string>
+    <string name="login_with_facebook">Đăng nhập bằng Facebook</string>
     <string name="title_activity_media_player">MediaPlayerActivity</string>
     <string name="title_logo">NATIONAL GEOGRAPHIC</string>
     <string name="btn_skip_intro">Skip Intro</string>
@@ -28,4 +28,21 @@
     <string name="news_book_titles">Sách mới</string>
     <string name="coming_books">Sách sắp phát hành</string>
     <string name="hot_books_titles">Sách bán chạy</string>
+    <string name="star_0">&#xf006;&#xf006;&#xf006;&#xf006;&#xf006;</string>
+    <string name="star_1">&#xF005;&#xf006;&#xf006;&#xf006;&#xf006;</string>
+    <string name="star_2">&#xF005;&#xF005;&#xf006;&#xf006;&#xf006;</string>
+    <string name="star_3">&#xF005;&#xF005;&#xF005;&#xf006;&#xf006;</string>
+    <string name="star_4">&#xF005;&#xF005;&#xF005;&#xF005;&#xf006;</string>
+    <string name="star_5">&#xF005;&#xF005;&#xF005;&#xF005;&#xF005;</string>
+    <string name="so_dien_thoai">Số điện thoại</string>
+    <string name="save_infomation">LƯU THÔNG TIN</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main2">Main2Activity</string>
+    <string name="your_comment_string">Đánh giá của bạn</string>
+    <string name="send_comment">Gửi đánh giá</string>
+    <string name="comment">Đánh giá</string>
+    <string name="title_activity_no_network">MCBooks</string>
+    <string name="gift_icon">&#xf06b;</string>
+    <string name="buy_book">MUA SÁCH</string>
+
 </resources>

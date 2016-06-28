@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context=".activity.AudioPlayerActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/app_bar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height"
+        android:fitsSystemWindows="true"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <RelativeLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/AppTheme.PopupOverlay" >
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <TextView
+                        android:layout_marginRight="12dp"
+                        android:layout_marginLeft="12dp"
+                        android:freezesText="true"
+                        android:id="@+id/titleMusic"
+                        android:layout_centerInParent="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textStyle="bold"
+                        android:textSize="16sp"
+                        android:textColor="@android:color/white"
+                        android:text="Tên sách"/>
+                </RelativeLayout>
+            </android.support.v7.widget.Toolbar>
+           <RelativeLayout
+               android:layout_below="@id/toolbar"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent">
+               <ImageView
+                   android:layout_marginTop="20dp"
+                   android:layout_centerHorizontal="true"
+                   android:layout_width="50dp"
+                   android:layout_height="50dp"
+                   app:srcCompat="@drawable/music_player"/>
+
+               <RelativeLayout
+                   android:id="@+id/tmp_controller"
+                   android:layout_width="match_parent"
+                   android:layout_height="80dp"
+                   android:layout_alignParentBottom="true">
+                   <TextView
+                       android:layout_marginLeft="10dp"
+                       android:id="@+id/txtCurrentTime"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="00:00" />
+                   <TextView
+                       android:layout_marginRight="10dp"
+                       android:layout_alignParentRight="true"
+                       android:id="@+id/txtMaxTime"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:text="00:00" />
+                   <SeekBar
+                       android:layout_toEndOf="@id/txtCurrentTime"
+                       android:layout_toStartOf="@id/txtMaxTime"
+                       android:id="@+id/progress_media"
+                       android:thumbTint="@android:color/background_light"
+                       android:layout_width="match_parent"
+                       android:layout_height="wrap_content"
+                       android:layout_alignParentTop="true" />
+                   <ImageButton
+                       android:id="@+id/btnPlay"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_centerHorizontal="true"
+                       android:layout_centerVertical="true"
+                       app:srcCompat="@drawable/ic_play_arrow_white_48px"
+                       android:background="@android:color/transparent"/>
+                   <ImageButton
+                       android:id="@+id/btnPrevious"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginRight="30dp"
+                       android:layout_toStartOf="@id/btnPlay"
+                       android:layout_centerVertical="true"
+                       app:srcCompat="@drawable/ic_skip_previous_white_24px"
+                       android:background="@android:color/transparent"/>
+
+                   <ImageButton
+                       android:id="@+id/btnNext"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_marginLeft="30dp"
+                       android:layout_toEndOf="@id/btnPlay"
+                       android:layout_centerVertical="true"
+                       app:srcCompat="@drawable/ic_skip_next_white_24px"
+                       android:background="@android:color/transparent"/>
+                   <ImageButton
+                       android:layout_centerVertical="true"
+                       android:layout_alignParentRight="true"
+                       android:layout_toEndOf="@id/btnNext"
+                       android:id="@+id/repeat"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       app:srcCompat="@drawable/ic_repeat_white_36px"
+                       android:background="@android:color/transparent" />
+               </RelativeLayout>
+
+           </RelativeLayout>
+        </RelativeLayout>
+    </android.support.design.widget.AppBarLayout>
+
+    <ListView
+        android:layout_below="@id/app_bar"
+        android:id="@+id/listMedia"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </ListView>
+
+</RelativeLayout>

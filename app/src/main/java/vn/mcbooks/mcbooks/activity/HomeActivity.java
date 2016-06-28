@@ -47,7 +47,10 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.eventbus.ListOrGridEventBus;
 import vn.mcbooks.mcbooks.eventbus.OpenBookDetailEvent;
+import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
+import vn.mcbooks.mcbooks.eventbus.ShowHideViewTypeMenuEventBus;
 import vn.mcbooks.mcbooks.fragment.AboutMCBooksFragment;
 import vn.mcbooks.mcbooks.fragment.BaseFragment;
 import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
@@ -85,11 +88,18 @@ public class HomeActivity extends BaseActivity
         IReloadData,
         ILogout,
         IToolBarController,
-        IBottomNavigationController{
+        IBottomNavigationController {
     public static final int REQUEST_CODE = 1;
-    public static final int MENU_ABOUT = 0;
-    public static final int MENU_LOGOUT = 1;
-    public static final int MENU_CALL_MCBOOKS = 2;
+    public static final int MENU_ABOUT = 19951;
+    public static final int MENU_LOGOUT = 19952;
+    public static final int MENU_CALL_MCBOOKS = 19953;
+
+    HomeFragment homeFragment = null;
+    BookDetailFragment bookDetailFragment = null;
+    ProfileFragment profileFragment = null;
+    QRCodeFragment qrCodeFragment = null;
+    FavoriteFragment favoriteFragment = null;
+
 
     //------getbook from favorite
     int pageFavorite = 1;
@@ -120,17 +130,20 @@ public class HomeActivity extends BaseActivity
     //---data
     private Book bookDetail = null;
     private boolean isShowDetail = false;
+    private MenuItem menuList;
+    private MenuItem menuGrid;
 
     @Override
     protected void onStart() {
         super.onStart();
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (isShowDetail){
-            BookDetailFragment bookDetailFragment
+        if (isShowDetail) {
+            bookDetailFragment
                     = BookDetailFragment.create(bookDetail, bookDetail.getCategories().get(0).getName());
             this.openFragment(bookDetailFragment, false);
             isShowDetail = false;
@@ -151,8 +164,12 @@ public class HomeActivity extends BaseActivity
         if (loginDataResult == null) {
             loadBooks();
         } else {
-            HomeFragment homeFragment = new HomeFragment();
-            homeFragment.setiReloadData(this);
+            if (homeFragment == null){
+                homeFragment = new HomeFragment();
+            }
+            if (homeFragment.getiReloadData() != null){
+                homeFragment.setiReloadData(this);
+            }
             homeFragment.setDataLoginResult(loginDataResult);
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, homeFragment)
@@ -190,7 +207,7 @@ public class HomeActivity extends BaseActivity
                     Toast.makeText(HomeActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
                 } else if (response.body().getResult().size() > 0) {
                     pageFavorite++;
-                    ContentManager.getInstance().getListBookFavorite().addAll(response.body().getResult());
+                    ContentManager.getInstance().addListBookToFavorite(response.body().getResult());
                     if (response.body().getResult().size() == 10) {
                         getBookInFavoriteByPage(getBookService);
                     }
@@ -200,6 +217,7 @@ public class HomeActivity extends BaseActivity
             @Override
             public void onFailure(Call<GetBookResult> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                logout();
             }
         });
     }
@@ -228,6 +246,7 @@ public class HomeActivity extends BaseActivity
             @Override
             public void onFailure(Call<GetMediaFavoriteResult> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                logout();
             }
         });
     }
@@ -249,6 +268,7 @@ public class HomeActivity extends BaseActivity
             @Override
             public void onFailure(Call<GetCategoriesResult> call, Throwable t) {
                 Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                logout();
             }
         });
     }
@@ -259,11 +279,12 @@ public class HomeActivity extends BaseActivity
             for (int i = 0; i < categories.size(); i++) {
                 menuCategories.add(R.id.categories, Menu.NONE, i, categories.get(i).getName()).setIcon(R.drawable.ic_folder_open_black_24dp);
             }
-            menuCategories.add(R.id.suport, MENU_ABOUT, categories.size(),"Về MCBooks").setIcon(R.drawable.ic_share_black_24dp);
+            menuCategories.add(R.id.suport, MENU_ABOUT, categories.size(), "Về MCBooks").setIcon(R.drawable.ic_share_black_24dp);
             menuCategories.add(R.id.suport, MENU_CALL_MCBOOKS, categories.size() + 1, "Gọi MCBooks").setIcon(R.drawable.ic_call_black_24dp);
             menuCategories.add(R.id.suport, MENU_LOGOUT, categories.size() + 2, "Đăng xuất").setIcon(R.drawable.ic_reply_black_24dp);
         }
     }
+
 
     private void initView() {
         //tabLayout = (TabLayout) findViewById(R.id.tabLayout);
@@ -275,13 +296,13 @@ public class HomeActivity extends BaseActivity
         initBottomNavigation();
     }
 
-    private void initBottomNavigation(){
+    private void initBottomNavigation() {
         bottomNavigation = (AHBottomNavigation) findViewById(R.id.bottom_navigation);
         AHBottomNavigationItem homeButtonBottom = new AHBottomNavigationItem(R.string.home, R.drawable.ic_home_white_24px, R.color.colorPrimary);
         AHBottomNavigationItem giftButtonBottom = new AHBottomNavigationItem(R.string.gift, R.drawable.ic_card_giftcard_white_24px, R.color.colorPrimary);
         AHBottomNavigationItem QRButtonBottom = new AHBottomNavigationItem(R.string.QR, R.mipmap.ic_qr_white, R.color.colorPrimary);
-        AHBottomNavigationItem favoriteButtonBottom = new AHBottomNavigationItem(R.string.favorit, R.drawable.favorite_fill_white,R.color.colorPrimary);
-        AHBottomNavigationItem aboutButtonBottom = new AHBottomNavigationItem(R.string.myaccount, R.drawable.ic_account_circle_white_24px,R.color.colorPrimary);
+        AHBottomNavigationItem favoriteButtonBottom = new AHBottomNavigationItem(R.string.favorit, R.drawable.favorite_fill_white, R.color.colorPrimary);
+        AHBottomNavigationItem aboutButtonBottom = new AHBottomNavigationItem(R.string.myaccount, R.drawable.ic_account_circle_white_24px, R.color.colorPrimary);
 
         bottomNavigation.addItem(homeButtonBottom);
         bottomNavigation.addItem(giftButtonBottom);
@@ -298,13 +319,15 @@ public class HomeActivity extends BaseActivity
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
-                if (true){
-                    switch (position){
+                if (!wasSelected) {
+                    switch (position) {
                         case 0:
-                            getSupportActionBar().setDisplayShowTitleEnabled(true);
-                            getSupportActionBar().setTitle("Danh sach sach");
-                            HomeFragment homeFragment = new HomeFragment();
-                            homeFragment.setiReloadData(HomeActivity.this);
+                            if (homeFragment == null){
+                                homeFragment = new HomeFragment();
+                            }
+                            if (homeFragment.getiReloadData() == null){
+                                homeFragment.setiReloadData(HomeActivity.this);
+                            }
                             addCallBack(homeFragment);
                             openFragment(homeFragment, true);
 
@@ -313,18 +336,26 @@ public class HomeActivity extends BaseActivity
                             //tabLayout.setVisibility(View.GONE);
                             break;
                         case 2:
-                            QRCodeFragment qrCodeFragment = new QRCodeFragment();
+                            if (qrCodeFragment == null){
+                                qrCodeFragment = new QRCodeFragment();
+                            }
+
                             openFragment(qrCodeFragment, true);
                             break;
                         case 3:
-                            Log.d("abc","abcdde");
+                            Log.d("abc", "abcdde");
                             //tabLayout.setVisibility(View.VISIBLE);
-                            openFragment(FavoriteFragment.create(), true);
+                            if (favoriteFragment == null){
+                                favoriteFragment = FavoriteFragment.create();
+                            }
+                            openFragment(favoriteFragment, true);
 
                             break;
                         case 4:
-                            //tabLayout.setVisibility(View.GONE);
-                            openFragment(new ProfileFragment(), true);
+                            if (profileFragment == null){
+                                profileFragment = new ProfileFragment();
+                            }
+                            openFragment(profileFragment, true);
 
                             break;
                         default:
@@ -471,8 +502,10 @@ public class HomeActivity extends BaseActivity
         } else {
             int count = getSupportFragmentManager().getBackStackEntryCount();
             if (count == 1) {
+                Log.d("HOMEACTIVITY", "1");
                 this.finish();
             } else {
+                Log.d("HOMEACTIVITY", "2");
                 getSupportFragmentManager().popBackStack();
             }
 
@@ -482,28 +515,51 @@ public class HomeActivity extends BaseActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.home, menu);
-        menu.getItem(1).setVisible(false);
-        menu.getItem(0).setVisible(false);
+        menuList = menu.getItem(0);
+        menuGrid = menu.getItem(1);
+        menuList.setVisible(false);
+        menuGrid.setVisible(false);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_search) {
-            Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
-            startActivityForResult(intent, REQUEST_CODE);
-            overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
-            return true;
+        switch (id) {
+            case R.id.action_search:
+                Intent intent = new Intent(HomeActivity.this, SearchActivity.class);
+                startActivityForResult(intent, REQUEST_CODE);
+                overridePendingTransition(R.anim.slide_in_up, R.anim.slide_out_up);
+                return true;
+            case R.id.action_grid:
+                Log.d("AHOME", "GRID");
+                EventBus.getDefault().post(new ListOrGridEventBus(ListOrGridEventBus.GRID));
+                setMenuVisible(ListOrGridEventBus.LIST);
+                return true;
+            case R.id.action_list:
+                Log.d("AHOME", "LIST");
+                EventBus.getDefault().post(new ListOrGridEventBus(ListOrGridEventBus.LIST));
+                setMenuVisible(ListOrGridEventBus.GRID);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    private void setMenuVisible(int viewType) {
+        if (viewType == ListOrGridEventBus.GRID) {
+            menuList.setVisible(false);
+            menuGrid.setVisible(true);
+        } else {
+            menuList.setVisible(true);
+            menuGrid.setVisible(false);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_CODE){
-            if (resultCode == AppCompatActivity.RESULT_OK){
+        if (requestCode == REQUEST_CODE) {
+            if (resultCode == AppCompatActivity.RESULT_OK) {
                 bookDetail = (Book) data.getSerializableExtra("BOOK");
                 isShowDetail = true;
                 isShowDetail = true;
@@ -517,9 +573,10 @@ public class HomeActivity extends BaseActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         String title = item.getTitle().toString();
-        switch (id){
+        switch (id) {
             case MENU_ABOUT:
-                openFragment(new AboutMCBooksFragment(),true);
+                Log.d("FUCK", "ádasdasd");
+                openFragment(new AboutMCBooksFragment(), true);
                 break;
             case MENU_LOGOUT:
                 logout();
@@ -560,10 +617,10 @@ public class HomeActivity extends BaseActivity
     }
 
     @Override
-    public void logout(){
+    public void logout() {
         SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
         String loginType = sharedPreferences.getString(LoginActivity.KEY_LOGIN_TYPE, "");
-        if (loginType.equals(LoginActivity.FACEBOOK_TYPE)){
+        if (loginType.equals(LoginActivity.FACEBOOK_TYPE)) {
             if (AccessToken.getCurrentAccessToken() == null) {
                 return;
             }
@@ -576,10 +633,11 @@ public class HomeActivity extends BaseActivity
             }).executeAsync();
         } else {
             GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext()).addApi(Auth.GOOGLE_SIGN_IN_API).build();
-            if (mGoogleApiClient.isConnected()){
+            if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.disconnect();
             }
         }
+        ContentManager.getInstance().resetContent();
 
         LogoutSocialService logoutSocialService
                 = ServiceFactory.getInstance().createService(LogoutSocialService.class);
@@ -587,7 +645,7 @@ public class HomeActivity extends BaseActivity
         call.enqueue(new Callback<LogoutSocialResult>() {
             @Override
             public void onResponse(Call<LogoutSocialResult> call, Response<LogoutSocialResult> response) {
-                if (response.body().code.equals(Integer.valueOf(1))){
+                if (response.body().code.equals(Integer.valueOf(1))) {
                     SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putBoolean(LoginActivity.KEY_ISLOGIN, false);
@@ -599,6 +657,7 @@ public class HomeActivity extends BaseActivity
                 }
 
             }
+
             @Override
             public void onFailure(Call<LogoutSocialResult> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), "Error!", Toast.LENGTH_LONG).show();
@@ -608,14 +667,14 @@ public class HomeActivity extends BaseActivity
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
 
         }
     }
 
     @Override
     public void openFragment(BaseFragment fragment, boolean onBackstack) {
-        if (onBackstack){
+        if (onBackstack) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack(fragment.toString()).commit();
         } else {
             getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
@@ -641,7 +700,7 @@ public class HomeActivity extends BaseActivity
     @Override
     public void changeTitles(String titles) {
         TextView textView = (TextView) findViewById(R.id.titleToolBar);
-        if (textView != null){
+        if (textView != null) {
             textView.setText(titles);
         }
 
@@ -676,11 +735,51 @@ public class HomeActivity extends BaseActivity
 
     @Override
     protected void onStop() {
-
+        EventBus.getDefault().unregister(this);
         super.onStop();
     }
 
     //--EVENT CENTER
 
+    @Subscribe
+    public void onEvent(ShowHideViewTypeMenuEventBus event) {
+        try {
+            if (event.isShow()) {
+                menuGrid.setVisible(false);
+                menuList.setVisible(true);
+            } else {
+                menuList.setVisible(false);
+                menuGrid.setVisible(false);
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
 
+    @Subscribe
+    public void onEvent(SetBottomBarPosition event) {
+        try {
+            switch (event.getPosition()) {
+                case 0:
+                    bottomNavigation.setCurrentItem(0);
+                    break;
+                case 1:
+                    bottomNavigation.setCurrentItem(1);
+                    break;
+                case 2:
+                    bottomNavigation.setCurrentItem(2);
+                    break;
+                case 3:
+                    bottomNavigation.setCurrentItem(3);
+                    break;
+                case 4:
+                    bottomNavigation.setCurrentItem(4);
+                    break;
+                default:
+                    break;
+            }
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
+    }
 }

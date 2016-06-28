@@ -37,6 +37,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.squareup.okhttp.Interceptor;
 import com.squareup.okhttp.Request;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -61,6 +62,7 @@ import vn.mcbooks.mcbooks.network_api.APIURL;
 import vn.mcbooks.mcbooks.network_api.LoginSocialService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
 import vn.mcbooks.mcbooks.singleton.ContentManager;
+import vn.mcbooks.mcbooks.singleton.UserModel;
 
 public class LoginActivity extends BaseActivity implements GoogleApiClient.OnConnectionFailedListener{
     //CONSTANT
@@ -98,7 +100,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
             bundle.putSerializable(DATA, null);
             intent.putExtras(bundle);
             startActivity(intent);
-            this.finish();;
+            this.finish();
         }
 
     }
@@ -117,7 +119,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     @Override
     protected void onResume() {
         super.onResume();
-
     }
     /*
         //Kết nối các view
@@ -131,7 +132,29 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         //butotn login with google +
         googleLogin = (SignInButton) this.findViewById(R.id.login_google_button);
         loginWithGoogleInit();
+        setGooglePlusButtonText(googleLogin, "Đăng nhập bằng Google");
+    }
 
+    /**
+     * Call this method to change text of SignInButton.
+     *
+     * @param signInButton
+     *            instance of Google plus SignInButton
+     * @param buttonText
+     *            new text of the button
+     */
+    protected void setGooglePlusButtonText(SignInButton signInButton, String buttonText) {
+        // Search all the views inside SignInButton for TextView
+        for (int i = 0; i < signInButton.getChildCount(); i++) {
+            View v = signInButton.getChildAt(i);
+
+            // if the view is instance of TextView then change the text SignInButton
+            if (v instanceof TextView) {
+                TextView tv = (TextView) v;
+                tv.setText(buttonText);
+                return;
+            }
+        }
     }
 
     private void loginWithFacebookInit(){
@@ -150,6 +173,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                                 Log.v("LoginActivity", response.toString());
                                 // Application code
                                 try {
+                                    //Log.d("HungTD", object.getString("user_mobile_phone") + " - " + object.getString("user_address"));
                                     login(object.getString("id"),
                                             object.getString("name"),
                                             object.getString("email"),
@@ -220,6 +244,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         editor.putString(KEY_LOGIN_TYPE, FACEBOOK_TYPE);
                         editor.putString(KEY_TOKEN, response.body().getResult().getAccessToken());
                         editor.apply();
+                        ContentManager.getInstance().setUser(new UserModel(name, email, avatar));
                         loginResultData = response.body().getResult();
                         loginSuccess();
                     } else {
@@ -248,6 +273,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         editor.putString(KEY_ID, id);
                         editor.putString(KEY_LOGIN_TYPE, GOOGLE_TYPE);
                         editor.putString(KEY_TOKEN, response.body().getResult().getAccessToken());
+                        ContentManager.getInstance().setUser(new UserModel(name, email, avatar));
                         editor.apply();
                         loginResultData = response.body().getResult();
                         loginSuccess();
@@ -317,7 +343,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
             if (acct.getPhotoUrl() != null){
                 login(acct.getId(), acct.getEmail(), acct.getDisplayName(), acct.getPhotoUrl().toString(), LoginSocialService.GOOGLE);
             } else {
-                login(acct.getId(), acct.getEmail(), acct.getDisplayName(), "", LoginSocialService.GOOGLE);
+                login(acct.getId(), acct.getEmail(), acct.getDisplayName(), APIURL.BaseURL + "public/img/avatar_default.png", LoginSocialService.GOOGLE);
             }
         } else {
             Toast.makeText(this, "Login Google Failed", Toast.LENGTH_LONG).show();

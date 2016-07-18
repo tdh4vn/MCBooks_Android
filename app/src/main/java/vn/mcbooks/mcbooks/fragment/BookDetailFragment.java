@@ -49,8 +49,6 @@ import vn.mcbooks.mcbooks.dialog.SaleOffsDialog;
 import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
 import vn.mcbooks.mcbooks.image_helper.CircleTransform;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
-import vn.mcbooks.mcbooks.intef.ITabLayoutManager;
-import vn.mcbooks.mcbooks.intef.IToolBarController;
 import vn.mcbooks.mcbooks.model.BaseResult;
 import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.GetRatingResult;
@@ -124,8 +122,13 @@ public class BookDetailFragment extends BaseFragment {
     }
 
     public static BookDetailFragment create(Book mBook, String title){
+        Log.d("Da den day", "create");
         BookDetailFragment bookDetailFragment = new BookDetailFragment();
         bookDetailFragment.titles = title;
+        String str = mBook.getInformation().getDescription().replaceAll("\\\\n", "<br>");
+        str = str.replaceAll("\\n", "<br>");
+        str = str.replaceAll("\n","<br>");
+        mBook.getInformation().setDescription(str);
         bookDetailFragment.mBook = mBook;
         return bookDetailFragment;
     }
@@ -133,6 +136,10 @@ public class BookDetailFragment extends BaseFragment {
 
     public static BookDetailFragment create(Book mBook){
         BookDetailFragment bookDetailFragment = new BookDetailFragment();
+        String str = mBook.getInformation().getDescription().replaceAll("\\\\n", "<br>");
+        str = str.replaceAll("\\n", "<br>");
+        str = str.replaceAll("\n","<br>");
+        mBook.getInformation().setDescription(str);
         bookDetailFragment.mBook = mBook;
         return bookDetailFragment;
     }
@@ -176,8 +183,11 @@ public class BookDetailFragment extends BaseFragment {
         btnSaleOff = (ImageButton)view.findViewById(R.id.btnSaleOffs);
         btnFavorite = (ImageButton)view.findViewById(R.id.favorite);
         mBook.setFavorite(ContentManager.getInstance().checkBookInFavorite(mBook.getId()));
-
-        txtDescription.setText(mBook.getInformation().getDescription().substring(0, (int)(mBook.getInformation().getDescription().length() * 0.5)) + "...");
+        if (mBook.getPreview().length() <= 1){
+            btnReadPreview.setEnabled(false);
+            btnReadPreview.setTextColor(ContextCompat.getColor(getActivity(), android.R.color.darker_gray));
+        }
+        txtDescription.setText(Html.fromHtml(mBook.getInformation().getDescription().substring(0, (int)(mBook.getInformation().getDescription().length() * 0.5)) + "..."));
         btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -244,11 +254,11 @@ public class BookDetailFragment extends BaseFragment {
             public void onClick(View v) {
                 if (!isLoadMore){
                     isLoadMore = true;
-                    txtDescription.setText(mBook.getInformation().getDescription());
+                    txtDescription.setText(Html.fromHtml(mBook.getInformation().getDescription()));
                     btnReadMore.setText("Thu gọn");
                 } else {
                     isLoadMore = false;
-                    txtDescription.setText(mBook.getInformation().getDescription().substring(0, (int)(mBook.getInformation().getDescription().length() * 0.5)) + "...");
+                    txtDescription.setText(Html.fromHtml(mBook.getInformation().getDescription().substring(0, (int)(mBook.getInformation().getDescription().length() * 0.5)) + "..."));
                     btnReadMore.setText("Xem thêm");
                 }
             }
@@ -334,7 +344,11 @@ public class BookDetailFragment extends BaseFragment {
         if (urlImg.equals("")) {
             Picasso.with(getActivity()).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatar);
         } else {
-            Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatar);
+            if(urlImg.indexOf("http") != -1){
+                Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+            } else {
+                Picasso.with(getActivity()).load(APIURL.BaseURL + urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+            }
         }
         if (mBook.getRatings().getMyRating() != null && mBook.getRatings().getMyRating().getComment() != null){
             frmMyComment.setVisibility(View.VISIBLE);
@@ -342,7 +356,11 @@ public class BookDetailFragment extends BaseFragment {
             if (urlImg.equals("")) {
                 Picasso.with(getActivity()).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatarMyComment);
             } else {
-                Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                if(urlImg.indexOf("http") != -1){
+                    Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                } else {
+                    Picasso.with(getActivity()).load(APIURL.BaseURL + urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                }
             }
             txtUserNameMyComment.setText(userName);
             if (mBook.getRatings().getMyRating().getStars() != null){
@@ -362,9 +380,8 @@ public class BookDetailFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new SetBottomBarPosition(0));
+        EventBus.getDefault().post(new SetBottomBarPosition(0, false));
         if (mBook != null){
-
             Picasso.with(getContext()).load(APIURL.BASE_IMAGE_URL + mBook.getImage() + "&width=200").into(iconBook);
             txtBookName.setText(mBook.getName());
             txtShortDetail.setText(getShortDetail(mBook.getInformation()));
@@ -394,12 +411,17 @@ public class BookDetailFragment extends BaseFragment {
             btnBuy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mBook.getBuyUrl().equals("") || mBook.getBuyUrl() == null){
-                        showToast("Chưa có thông tin nơi bán!", Toast.LENGTH_LONG);
-                    } else {
-                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri. parse(mBook.getBuyUrl()));
-                        startActivity(browserIntent);
+                    try {
+                        if (mBook.getBuyUrl().equals("") || mBook.getBuyUrl() == null){
+                            showToast("Chưa có thông tin nơi bán!", Toast.LENGTH_LONG);
+                        } else {
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri. parse(mBook.getBuyUrl()));
+                            startActivity(browserIntent);
+                        }
+                    } catch (Exception e){
+
                     }
+
                 }
             });
             btnYoutube.setOnClickListener(new View.OnClickListener() {
@@ -438,7 +460,11 @@ public class BookDetailFragment extends BaseFragment {
                 if (urlImg.equals("")) {
                     Picasso.with(getActivity()).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatarMyComment);
                 } else {
-                    Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                    if(urlImg.indexOf("http") != -1){
+                        Picasso.with(getActivity()).load(urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                    } else {
+                        Picasso.with(getActivity()).load(APIURL.BaseURL + urlImg).transform(new CircleTransform()).into(imgAvatarMyComment);
+                    }
                 }
                 txtUserNameMyComment.setText(userName);
                 try {
@@ -476,7 +502,8 @@ public class BookDetailFragment extends BaseFragment {
                                     listRatingViewModel.add(
                                             new RatingViewModel(userRating.getId(),
                                                     userRating.getAssessor().getName(),
-                                                    userRating.getComment(), userRating.getStars(),
+                                                    userRating.getComment(),
+                                                    userRating.getStars(),
                                                     userRating.getAssessor().getAvatar(),
                                                     userRating.getCreateAt()));
 

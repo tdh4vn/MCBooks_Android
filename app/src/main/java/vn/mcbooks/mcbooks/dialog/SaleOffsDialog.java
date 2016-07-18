@@ -35,9 +35,10 @@ public class SaleOffsDialog extends DialogFragment {
         TextView textView = (TextView)v.findViewById(R.id.txtSaleOffs);
         String str = "";
         for (String s: saleOffs){
-            str = str +  getString(R.string.gift_icon) + " " + s +"\n";
+            s = s.replaceAll("\"", "");
+            str = str + "&#9679; " + s +"<br><br>";
         }
-        textView.setText(str);
+        textView.setText(Html.fromHtml(str));
         return v;
     }
 }

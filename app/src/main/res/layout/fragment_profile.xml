@@ -34,6 +34,7 @@
             android:inputType="text"
             android:id="@+id/txtName"/>
         <EditText
+            android:enabled="false"
             android:layout_marginLeft="32dp"
             android:layout_marginRight="32dp"
             android:layout_width="match_parent"
@@ -51,8 +52,7 @@
             android:hint="@string/so_dien_thoai"
             android:inputType="phone"
             android:id="@+id/txtPhone"/>
-
-
+        
         <Button
             android:id="@+id/btnSubmit"
             android:layout_marginTop="32dp"

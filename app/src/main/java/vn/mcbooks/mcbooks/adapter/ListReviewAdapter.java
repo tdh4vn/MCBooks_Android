@@ -75,8 +75,10 @@ public class ListReviewAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
+        //TODO
         Picasso.with(mContext).load(listRating.get(position).getAvatar()).into(holder.imgAvatar);
         holder.txtUsername.setText(listRating.get(position).getName());
+        Log.d("Nhan Xinh Nhat", listRating.get(position).getName());
         holder.txtComment.setText(listRating.get(position).getComment());
         holder.timeRate.setText(new SimpleDateFormat("dd/MM/yyyy").format(listRating.get(position).getTimeRating()));
         holder.txtRaingStars.setText(StringUtils.ratingLabel(listRating.get(position).getStars(), mContext));

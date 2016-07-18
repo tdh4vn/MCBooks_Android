@@ -24,6 +24,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.intef.IDownloader;
+import vn.mcbooks.mcbooks.intef.IOpenVideo;
 import vn.mcbooks.mcbooks.intef.IPlayAudio;
 import vn.mcbooks.mcbooks.model.Audio;
 import vn.mcbooks.mcbooks.model.BaseResult;
@@ -86,6 +87,7 @@ public class ListVideoAdapter extends BaseAdapter implements View.OnClickListene
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
+
         if (convertView == null) {
 
             convertView = layoutInflater.inflate(R.layout.item_video, null);
@@ -116,6 +118,12 @@ public class ListVideoAdapter extends BaseAdapter implements View.OnClickListene
             holder.stateOfButtonFavorite = 0;
             bundle.putBoolean("ADD", false);
         }
+        holder.content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((IOpenVideo)mContext).openVideo(position);
+            }
+        });
         holder.btnFavorite.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

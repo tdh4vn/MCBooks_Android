@@ -37,8 +37,9 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
  * A simple {@link Fragment} subclass.
  */
 public class AudioFavoriteFragment extends Fragment {
-
+    public static final String MEDIA = "MEDIAA";
     ListView listViewMedia;
+    ListMediaInBookAdapter listMediaInBookAdapter;
 
 
     public AudioFavoriteFragment() {
@@ -58,38 +59,41 @@ public class AudioFavoriteFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        listMediaInBookAdapter.setListMedia(ContentManager.getInstance().getListAudioFavorite());
+        listMediaInBookAdapter.notifyDataSetChanged();
     }
 
     void initView(View rootView){
         if (rootView != null){
             listViewMedia = (ListView) rootView.findViewById(R.id.listMediaFavorite);
-            ListMediaInBookAdapter listMediaInBookAdapter = new ListMediaInBookAdapter(
+            listMediaInBookAdapter = new ListMediaInBookAdapter(
                     ContentManager.getInstance().getListAudioFavorite(), getActivity());
             listViewMedia.setAdapter(listMediaInBookAdapter);
             listViewMedia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    MediaInBook mediaInBook = ContentManager.getInstance().getListAudioFavorite().get(position);
-                    GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
-                    Call<GetBookByIDResult> call = getBookService.getBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mediaInBook.getBook().getId());
-                    call.enqueue(new Callback<GetBookByIDResult>() {
-                        @Override
-                        public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
-                            if (response.body().getCode() != 1){
-                                Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_LONG).show();
-                            } else {
-                                Log.d("TG",response.body().getResult().getId());
-                                Intent intent = new Intent(getActivity(), AudioPlayerActivity.class);
-                                intent.putExtra(BookDetailFragment.BOOK, response.body().getResult());
-                                startActivity(intent);
-                            }
+                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
+                MediaInBook mediaInBook = ContentManager.getInstance().getListAudioFavorite().get(position);
+                GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
+                Call<GetBookByIDResult> call = getBookService.getBookByID(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), mediaInBook.getBook().getId());
+                call.enqueue(new Callback<GetBookByIDResult>() {
+                    @Override
+                    public void onResponse(Call<GetBookByIDResult> call, Response<GetBookByIDResult> response) {
+                        if (response.body().getCode() != 1){
+                            Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d("TG",response.body().getResult().getId());
+                            Intent intent = new Intent(getActivity(), AudioPlayerActivity.class);
+                            intent.putExtra(BookDetailFragment.BOOK, response.body().getResult());
+                            intent.putExtra(MEDIA, listMediaInBookAdapter.getItem(position).getId());
+                            startActivity(intent);
                         }
+                    }
 
-                        @Override
-                        public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
-                            Toast.makeText(getActivity(),"Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    @Override
+                    public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
+                        Toast.makeText(getActivity(),"Vui lòng đăng xuất và thử lại!", Toast.LENGTH_LONG).show();
+                    }
+                });
                 }
             });
         }

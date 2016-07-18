@@ -1,7 +1,6 @@
 package vn.mcbooks.mcbooks.activity;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
@@ -24,12 +23,14 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.ListMediaAdapter;
+import vn.mcbooks.mcbooks.fragment.AudioFavoriteFragment;
 import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
 import vn.mcbooks.mcbooks.intef.IDownloader;
 import vn.mcbooks.mcbooks.intef.IPlayAudio;
@@ -37,6 +38,7 @@ import vn.mcbooks.mcbooks.model.Audio;
 import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.Media;
 import vn.mcbooks.mcbooks.network_api.APIURL;
+import vn.mcbooks.mcbooks.utils.CheckConnection;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
 public class AudioPlayerActivity extends BaseActivity
@@ -49,6 +51,7 @@ public class AudioPlayerActivity extends BaseActivity
     private TextView txtTileMusic;
     private int index = 0;
     private boolean isInitMediplayer = false;
+    private CheckConnection checkConnection = new CheckConnection(this);
 
     private ProgressDialog mProgressDialog;
 
@@ -69,7 +72,11 @@ public class AudioPlayerActivity extends BaseActivity
         @Override
         public void run() {
             int currentPosition = mediaPlayer.getCurrentPosition();
-            txtCurrentTime.setText(StringUtils.milliSecondsToTimer((long)currentPosition));
+            if (checkConnection.checkMobileInternetConn()){
+                txtCurrentTime.setText(StringUtils.milliSecondsToTimer((long)currentPosition));
+            } else {
+                txtCurrentTime.setText("00:00");
+            }
             progressMedia.setProgress(currentPosition);
             updateMediaHandler.postDelayed(this, 100);
         }
@@ -78,7 +85,9 @@ public class AudioPlayerActivity extends BaseActivity
 
     void checkFile(){
         for (Audio audio : listAudio){
-            File file = new File(getFilesDir(), audio.getId()+".mp3");
+            String fileType = audio.getUrl().substring(audio.getUrl().lastIndexOf('.'), audio.getUrl().length());
+            File file = new File(getFilesDir(), audio.getId()+fileType);
+            audio.setLocalURI("null");
             if (file.exists()){
                 audio.setLocalURI(file.getAbsolutePath());
             }
@@ -92,8 +101,13 @@ public class AudioPlayerActivity extends BaseActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_media_player);
         mBook = (Book) getIntent().getSerializableExtra(BookDetailFragment.BOOK);
-        for (Media media : mBook.getMedias()){
+        String id = getIntent().getStringExtra(AudioFavoriteFragment.MEDIA);
+        for (int i = 0; i < mBook.getMedias().size(); i++){
+            Media media = mBook.getMedias().get(i);
             if (media.getType() == Media.AUDIO_TYPE){
+                if (media.getId().equals(id)){
+                    index = i;
+                }
                 Audio audio = new Audio();
                 audio.setId(media.getId());
                 audio.setName(media.getName());
@@ -102,9 +116,11 @@ public class AudioPlayerActivity extends BaseActivity
                 listAudio.add(audio);
             }
         }
+
         checkFile();
         initView();
         initAudioPlayer();
+        listMedia.setSelection(index);
     }
 
 
@@ -115,16 +131,23 @@ public class AudioPlayerActivity extends BaseActivity
 
     private void initAudioData(){
         try {
-            index = 0;
             ((ListMediaAdapter)listMedia.getAdapter()).setIndexPlay(index);
             ((ListMediaAdapter)listMedia.getAdapter()).notifyDataSetChanged();
             if (listAudio.get(index).getLocalURI().equals("null")){
                 mediaPlayer.setDataSource(listAudio.get(index).getUrl());
+                if (new CheckConnection(this).checkMobileInternetConn()){
+                    isReadyPlay = false;
+                    mediaPlayer.prepareAsync();
+                } else {
+                    txtCurrentTime.setText("00:00");
+                    Toast.makeText(this, "Vui lòng kiểm tra lại kết nối mạng", Toast.LENGTH_SHORT).show();
+                }
+
             } else {
                 mediaPlayer.setDataSource(listAudio.get(index).getLocalURI());
+                isReadyPlay = false;
+                mediaPlayer.prepare();
             }
-
-            mediaPlayer.prepare();
             mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
@@ -141,7 +164,6 @@ public class AudioPlayerActivity extends BaseActivity
                     if (isRepeatOne) {
                         mediaPlayer.seekTo(0);
                         mediaPlayer.start();
-
                     } else {
                         nextAudio();
                     }
@@ -168,13 +190,28 @@ public class AudioPlayerActivity extends BaseActivity
             progressMedia.setProgress(0);
             if (listAudio.get(index).getLocalURI().equals("null")) {
                 mediaPlayer.setDataSource(listAudio.get(index).getUrl());
+                isReadyPlay = false;
+                mediaPlayer.prepareAsync();
             } else {
                 mediaPlayer.setDataSource(listAudio.get(index).getLocalURI());
+                isReadyPlay = false;
+                mediaPlayer.prepare();
             }
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    isReadyPlay = true;
+                    txtCurrentTime.setText("00:00");
+                    txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
+                    progressMedia.setProgress(0);
+                    progressMedia.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
+                }
+            });
+
         } catch (IOException e){
             e.printStackTrace();
+            txtCurrentTime.setText("00:00");
             Toast.makeText(this, "Đường dẫn không đúng!", Toast.LENGTH_LONG).show();
         }
     }
@@ -193,13 +230,28 @@ public class AudioPlayerActivity extends BaseActivity
             progressMedia.setProgress(0);
             if (listAudio.get(index).getLocalURI().equals("null")) {
                 mediaPlayer.setDataSource(listAudio.get(index).getUrl());
+                isReadyPlay = false;
+                mediaPlayer.prepareAsync();
             } else {
                 mediaPlayer.setDataSource(listAudio.get(index).getLocalURI());
+                isReadyPlay = false;
+                mediaPlayer.prepare();
             }
-            mediaPlayer.prepare();
-            mediaPlayer.start();
+
+            mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                @Override
+                public void onPrepared(MediaPlayer mp) {
+                    isReadyPlay = true;
+                    txtCurrentTime.setText("00:00");
+                    txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
+                    progressMedia.setProgress(0);
+                    progressMedia.setMax(mediaPlayer.getDuration());
+                    mediaPlayer.start();
+                }
+            });
         } catch (IOException e){
             e.printStackTrace();
+            txtCurrentTime.setText("00:00");
             Toast.makeText(this, "Đường dẫn không đúng!", Toast.LENGTH_LONG).show();
         }
     }
@@ -214,18 +266,48 @@ public class AudioPlayerActivity extends BaseActivity
             //mediaPlayer.release();
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             playPauseButton.setImageResource(R.drawable.ic_pause_white_48px);
+            progressMedia.setEnabled(true);
             progressMedia.setProgress(0);
             if (listAudio.get(index).getLocalURI().equals("null")) {
-                Log.d("1", listAudio.get(index).getUrl());
-                mediaPlayer.setDataSource(listAudio.get(index).getUrl());
+                if(checkConnection.checkMobileInternetConn()){
+                    Log.d("1", listAudio.get(index).getUrl());
+                    mediaPlayer.setDataSource(listAudio.get(index).getUrl());
+                    mediaPlayer.prepareAsync();
+                    mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                        @Override
+                        public void onPrepared(MediaPlayer mp) {
+                            isReadyPlay = true;
+                            txtCurrentTime.setText("00:00");
+                            txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
+                            progressMedia.setProgress(0);
+                            progressMedia.setMax(mediaPlayer.getDuration());
+                            mediaPlayer.start();
+                        }
+                    });
+                } else {
+                    txtCurrentTime.setText("00:00");
+                    Toast.makeText(this, "Vui lòng kiểm tra lại kết nối mạng!", Toast.LENGTH_LONG).show();
+                }
+
             } else {
                 Log.d("2", listAudio.get(index).getLocalURI());
                 mediaPlayer.setDataSource(listAudio.get(index).getLocalURI());
+                mediaPlayer.prepare();
+                mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        isReadyPlay = true;
+                        txtCurrentTime.setText("00:00");
+                        txtMaxTime.setText(StringUtils.milliSecondsToTimer((long)mediaPlayer.getDuration()));
+                        progressMedia.setProgress(0);
+                        progressMedia.setMax(mediaPlayer.getDuration());
+                        mediaPlayer.start();
+                    }
+                });
             }
-            mediaPlayer.prepare();
-            mediaPlayer.start();
         } catch (IOException e){
             e.printStackTrace();
+            txtCurrentTime.setText("00:00");
             Toast.makeText(this, "Đường dẫn không đúng!", Toast.LENGTH_LONG).show();
         }
     }
@@ -281,6 +363,7 @@ public class AudioPlayerActivity extends BaseActivity
         listMedia.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d("Index + id", position + " " + id);
                 moveToAudio(position);
             }
         });
@@ -307,6 +390,7 @@ public class AudioPlayerActivity extends BaseActivity
                         }
                     }
                 } catch (Exception e){
+                    txtCurrentTime.setText("00:00");
                     Toast.makeText(AudioPlayerActivity.this, "Trình nghe nhạc chưa sẵn sàng!", Toast.LENGTH_LONG).show();
                 }
             }
@@ -315,7 +399,7 @@ public class AudioPlayerActivity extends BaseActivity
 
     private void initDialog(){
         mProgressDialog = new ProgressDialog(this);
-        mProgressDialog.setMessage("Đang tải file...");
+        mProgressDialog.setMessage(getString(R.string.downloading_file));
         mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
         mProgressDialog.setCancelable(false);
     }
@@ -420,15 +504,13 @@ public class AudioPlayerActivity extends BaseActivity
 
             try {
                 URL url = new URL(audio.getUrl());
-                URLConnection conexion = url.openConnection();
-                conexion.connect();
-
-                int lenghtOfFile = conexion.getContentLength();
+                URLConnection connection = url.openConnection();
+                connection.connect();
+                int lenghtOfFile = connection.getContentLength();
                 Log.d("ANDRO_ASYNC", "Lenght of file: " + lenghtOfFile);
-
+                String fileType = audio.getUrl().substring(audio.getUrl().lastIndexOf('.'), audio.getUrl().length());
                 InputStream input = new BufferedInputStream(url.openStream());
-                OutputStream output = openFileOutput(audio.getId()+".mp3", MODE_PRIVATE);
-
+                OutputStream output = openFileOutput(audio.getId()+fileType, MODE_PRIVATE);
                 byte data[] = new byte[1024];
 
                 long total = 0;
@@ -453,7 +535,8 @@ public class AudioPlayerActivity extends BaseActivity
 
         @Override
         protected void onPostExecute(String unused) {
-            audio.setLocalURI(getFilesDir().getAbsolutePath()+ "/" +audio.getId()+".mp3");
+            String fileType = audio.getUrl().substring(audio.getUrl().lastIndexOf('.'), audio.getUrl().length());
+            audio.setLocalURI(getFilesDir().getAbsolutePath()+ "/" +audio.getId()+fileType);
             downloadSuccess(audio);
             mProgressDialog.dismiss();
         }

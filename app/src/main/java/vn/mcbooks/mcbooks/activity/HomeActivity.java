@@ -12,6 +12,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -40,6 +41,8 @@ import com.squareup.picasso.Picasso;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.io.FileInputStream;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +50,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import vn.mcbooks.mcbooks.R;
+import vn.mcbooks.mcbooks.constant.AppConstant;
 import vn.mcbooks.mcbooks.eventbus.ListOrGridEventBus;
 import vn.mcbooks.mcbooks.eventbus.OpenBookDetailEvent;
 import vn.mcbooks.mcbooks.eventbus.SetBottomBarPosition;
@@ -55,6 +59,7 @@ import vn.mcbooks.mcbooks.fragment.AboutMCBooksFragment;
 import vn.mcbooks.mcbooks.fragment.BaseFragment;
 import vn.mcbooks.mcbooks.fragment.BookDetailFragment;
 import vn.mcbooks.mcbooks.fragment.FavoriteFragment;
+import vn.mcbooks.mcbooks.fragment.GiftFragment;
 import vn.mcbooks.mcbooks.fragment.HomeFragment;
 import vn.mcbooks.mcbooks.fragment.MoreBooksFragment;
 import vn.mcbooks.mcbooks.fragment.ProfileFragment;
@@ -64,6 +69,7 @@ import vn.mcbooks.mcbooks.intef.IBottomNavigationController;
 import vn.mcbooks.mcbooks.intef.ILogout;
 import vn.mcbooks.mcbooks.intef.IOpenFragment;
 import vn.mcbooks.mcbooks.intef.IReloadData;
+import vn.mcbooks.mcbooks.intef.IReloadUserLayout;
 import vn.mcbooks.mcbooks.intef.ITabLayoutManager;
 import vn.mcbooks.mcbooks.intef.IToolBarController;
 import vn.mcbooks.mcbooks.model.Book;
@@ -79,6 +85,7 @@ import vn.mcbooks.mcbooks.network_api.GetCategoriesService;
 import vn.mcbooks.mcbooks.network_api.LogoutSocialService;
 import vn.mcbooks.mcbooks.network_api.ServiceFactory;
 import vn.mcbooks.mcbooks.singleton.ContentManager;
+import vn.mcbooks.mcbooks.utils.CheckConnection;
 import vn.mcbooks.mcbooks.utils.StringUtils;
 
 public class HomeActivity extends BaseActivity
@@ -88,7 +95,8 @@ public class HomeActivity extends BaseActivity
         IReloadData,
         ILogout,
         IToolBarController,
-        IBottomNavigationController {
+        IBottomNavigationController,
+        IReloadUserLayout{
     public static final int REQUEST_CODE = 1;
     public static final int MENU_ABOUT = 19951;
     public static final int MENU_LOGOUT = 19952;
@@ -99,6 +107,8 @@ public class HomeActivity extends BaseActivity
     ProfileFragment profileFragment = null;
     QRCodeFragment qrCodeFragment = null;
     FavoriteFragment favoriteFragment = null;
+    GiftFragment giftFragment = null;
+    boolean naviagtionIsChangeFragment = true;
 
 
     //------getbook from favorite
@@ -145,7 +155,7 @@ public class HomeActivity extends BaseActivity
         if (isShowDetail) {
             bookDetailFragment
                     = BookDetailFragment.create(bookDetail, bookDetail.getCategories().get(0).getName());
-            this.openFragment(bookDetailFragment, false);
+            this.openFragment(bookDetailFragment, true);
             isShowDetail = false;
         }
     }
@@ -156,13 +166,46 @@ public class HomeActivity extends BaseActivity
         SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
         token = sharedPreferences.getString(LoginActivity.KEY_TOKEN, "");
         ContentManager.getInstance().setToken(token);
-        getBooksInFavorite();
-        getMediasInFavorite();
+        CheckConnection checkConnection = new CheckConnection(this);
+        if(checkConnection.checkMobileInternetConn()) {
+            getBooksInFavorite();
+            getMediasInFavorite();
+        }
         setContentView(R.layout.activity_home);
         listDataReloadCompletedCallBack = new ArrayList<>();
         loginDataResult = (Result) getIntent().getExtras().getSerializable(LoginActivity.DATA);
         if (loginDataResult == null) {
-            loadBooks();
+            if(checkConnection.checkMobileInternetConn()){
+                loadBooks();
+            } else {
+                try {
+                    FileInputStream fis = getApplicationContext().openFileInput(AppConstant.FILE_NAME);
+                    ObjectInputStream is = new ObjectInputStream(fis);
+                    ContentManager contentManager = (ContentManager) is.readObject();
+                    ContentManager.setOurInstance(contentManager);
+                    is.close();
+                    fis.close();
+                    loginDataResult = ContentManager.getInstance().getResult();
+                    if (homeFragment == null){
+                        homeFragment = new HomeFragment();
+                    }
+                    if (homeFragment.getiReloadData() != null){
+                        homeFragment.setiReloadData(this);
+                    }
+                    homeFragment.setDataLoginResult(loginDataResult);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, homeFragment)
+                            .addToBackStack(HomeFragment.NAME)
+                            .commit();
+                    isReady = true;
+                    newBooksReady = true;
+                    hotBooksReady = true;
+                    comingBooksReady = true;
+                } catch (Exception e){
+                    e.printStackTrace();
+                    Toast.makeText(this, "Có lỗi xảy ra, vui lòng thử lại", Toast.LENGTH_SHORT).show();
+                }
+            }
         } else {
             if (homeFragment == null){
                 homeFragment = new HomeFragment();
@@ -183,10 +226,13 @@ public class HomeActivity extends BaseActivity
         ContentManager.getInstance().setResult(loginDataResult);
         initNavigationView();
         if (!isReady) {
-            progressDialog = new ProgressDialog(this);
-            progressDialog.setMessage("Đang tải...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            try {
+                progressDialog = new ProgressDialog(this);
+                progressDialog.setMessage("Đang tải...");
+                progressDialog.show();
+            } catch (Exception e){
+
+            }
         }
         getCategories();
         initView();
@@ -228,49 +274,60 @@ public class HomeActivity extends BaseActivity
     }
 
     void getMediaInFavoriteByPage(final FavoriteServices favoriteServices) {
-        Call<GetMediaFavoriteResult> getBookResultCall = favoriteServices.getMediaFavorite(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), pageMediaFavorite);
-        getBookResultCall.enqueue(new Callback<GetMediaFavoriteResult>() {
-            @Override
-            public void onResponse(Call<GetMediaFavoriteResult> call, Response<GetMediaFavoriteResult> response) {
-                if (response.body().getCode() != 1) {
-                    Toast.makeText(HomeActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
-                } else if (response.body().getResult().size() > 0) {
-                    pageMediaFavorite++;
-                    ContentManager.getInstance().getListMediaFavorite().addAll(response.body().getResult());
-                    if (response.body().getResult().size() == 10) {
-                        getMediaInFavoriteByPage(favoriteServices);
+        try{
+            Call<GetMediaFavoriteResult> getBookResultCall = favoriteServices.getMediaFavorite(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), pageMediaFavorite);
+            getBookResultCall.enqueue(new Callback<GetMediaFavoriteResult>() {
+                @Override
+                public void onResponse(Call<GetMediaFavoriteResult> call, Response<GetMediaFavoriteResult> response) {
+                    if (response.body().getCode() != 1) {
+                        Toast.makeText(HomeActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
+                    } else if (response.body().getResult().size() > 0) {
+                        pageMediaFavorite++;
+                        ContentManager.getInstance().getListMediaFavorite().addAll(response.body().getResult());
+                        if (response.body().getResult().size() == 10) {
+                            getMediaInFavoriteByPage(favoriteServices);
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<GetMediaFavoriteResult> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
-                logout();
-            }
-        });
+                @Override
+                public void onFailure(Call<GetMediaFavoriteResult> call, Throwable t) {
+                    Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                    logout();
+                }
+            });
+        } catch (Exception e){
+
+        }
+
     }
 
     void getCategories() {
-        GetCategoriesService getCategoriesService = ServiceFactory.getInstance().createService(GetCategoriesService.class);
-        Call<GetCategoriesResult> call = getCategoriesService.getCategories(StringUtils.tokenBuild(ContentManager.getInstance().getToken()));
-        call.enqueue(new Callback<GetCategoriesResult>() {
-            @Override
-            public void onResponse(Call<GetCategoriesResult> call, Response<GetCategoriesResult> response) {
-                if (response.body().getCode() == 1) {
-                    categories = response.body().getResult();
-                    addCategoriesToMenu();
-                } else {
-                    Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+        CheckConnection checkConnection = new CheckConnection(this);
+        if (checkConnection.checkMobileInternetConn()){
+            GetCategoriesService getCategoriesService = ServiceFactory.getInstance().createService(GetCategoriesService.class);
+            Call<GetCategoriesResult> call = getCategoriesService.getCategories(StringUtils.tokenBuild(ContentManager.getInstance().getToken()));
+            call.enqueue(new Callback<GetCategoriesResult>() {
+                @Override
+                public void onResponse(Call<GetCategoriesResult> call, Response<GetCategoriesResult> response) {
+                    if (response.body().getCode() == 1) {
+                        categories = response.body().getResult();
+                        ContentManager.getInstance().setCategories(categories);
+                        addCategoriesToMenu();
+                    } else {
+                        Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
 
-            @Override
-            public void onFailure(Call<GetCategoriesResult> call, Throwable t) {
-                Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
-                logout();
-            }
-        });
+                @Override
+                public void onFailure(Call<GetCategoriesResult> call, Throwable t) {
+                    Toast.makeText(HomeActivity.this, "Có lỗi xảy ra! Vui lòng khởi động lại ứng dụng.", Toast.LENGTH_SHORT).show();
+                    logout();
+                }
+            });
+        } else {
+            categories = ContentManager.getInstance().getCategories();
+        }
     }
 
     private void addCategoriesToMenu() {
@@ -328,35 +385,46 @@ public class HomeActivity extends BaseActivity
                             if (homeFragment.getiReloadData() == null){
                                 homeFragment.setiReloadData(HomeActivity.this);
                             }
-                            addCallBack(homeFragment);
-                            openFragment(homeFragment, true);
+                            Log.d("ác","sdsd");
+                            if (naviagtionIsChangeFragment){
+                                addCallBack(homeFragment);
+                                openFragment(homeFragment, true);
+                            }
 
                             break;
                         case 1:
-                            //tabLayout.setVisibility(View.GONE);
+                            if (giftFragment == null){
+                                giftFragment = GiftFragment.newInstance();
+                            }
+                            if (naviagtionIsChangeFragment) {
+                                openFragment(giftFragment, true);
+                            }
                             break;
                         case 2:
                             if (qrCodeFragment == null){
                                 qrCodeFragment = new QRCodeFragment();
                             }
-
-                            openFragment(qrCodeFragment, true);
+                            if (naviagtionIsChangeFragment) {
+                                openFragment(qrCodeFragment, true);
+                            }
                             break;
                         case 3:
-                            Log.d("abc", "abcdde");
+
                             //tabLayout.setVisibility(View.VISIBLE);
                             if (favoriteFragment == null){
                                 favoriteFragment = FavoriteFragment.create();
                             }
-                            openFragment(favoriteFragment, true);
-
+                            if (naviagtionIsChangeFragment) {
+                                openFragment(favoriteFragment, true);
+                            }
                             break;
                         case 4:
                             if (profileFragment == null){
                                 profileFragment = new ProfileFragment();
                             }
-                            openFragment(profileFragment, true);
-
+                            if (naviagtionIsChangeFragment) {
+                                openFragment(profileFragment, true);
+                            }
                             break;
                         default:
                             break;
@@ -365,8 +433,6 @@ public class HomeActivity extends BaseActivity
                 return true;
             }
         });
-
-
     }
 
     private void loadBooks() {
@@ -558,11 +624,16 @@ public class HomeActivity extends BaseActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         if (requestCode == REQUEST_CODE) {
             if (resultCode == AppCompatActivity.RESULT_OK) {
                 bookDetail = (Book) data.getSerializableExtra("BOOK");
                 isShowDetail = true;
                 isShowDetail = true;
+            }
+        } else {
+            for (Fragment fragment : getSupportFragmentManager().getFragments()) {
+                fragment.onActivityResult(requestCode, resultCode, data);
             }
         }
     }
@@ -579,6 +650,7 @@ public class HomeActivity extends BaseActivity
                 openFragment(new AboutMCBooksFragment(), true);
                 break;
             case MENU_LOGOUT:
+                Log.d("FUCK", "áda22sdasd");
                 logout();
                 break;
             case MENU_CALL_MCBOOKS:
@@ -621,40 +693,41 @@ public class HomeActivity extends BaseActivity
         SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
         String loginType = sharedPreferences.getString(LoginActivity.KEY_LOGIN_TYPE, "");
         if (loginType.equals(LoginActivity.FACEBOOK_TYPE)) {
-            if (AccessToken.getCurrentAccessToken() == null) {
-                return;
+            if (AccessToken.getCurrentAccessToken() != null) {
+                new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
+                        .Callback() {
+                    @Override
+                    public void onCompleted(GraphResponse graphResponse) {
+                        LoginManager.getInstance().logOut();
+                    }
+                }).executeAsync();
             }
-            new GraphRequest(AccessToken.getCurrentAccessToken(), "/me/permissions/", null, HttpMethod.DELETE, new GraphRequest
-                    .Callback() {
-                @Override
-                public void onCompleted(GraphResponse graphResponse) {
-                    LoginManager.getInstance().logOut();
-                }
-            }).executeAsync();
         } else {
             GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getApplicationContext()).addApi(Auth.GOOGLE_SIGN_IN_API).build();
             if (mGoogleApiClient.isConnected()) {
                 mGoogleApiClient.disconnect();
             }
         }
+        Log.d("FUCK", "ádasdasdlôngut1");
         ContentManager.getInstance().resetContent();
-
+        Log.d("FUCK", "ádasdasdlôngut2");
         LogoutSocialService logoutSocialService
                 = ServiceFactory.getInstance().createService(LogoutSocialService.class);
         Call<LogoutSocialResult> call = logoutSocialService.logoutSocial("Access_token " + token);
+        Log.d("FUCK", "ádasdasdlôngut3");
         call.enqueue(new Callback<LogoutSocialResult>() {
             @Override
             public void onResponse(Call<LogoutSocialResult> call, Response<LogoutSocialResult> response) {
-                if (response.body().code.equals(Integer.valueOf(1))) {
-                    SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putBoolean(LoginActivity.KEY_ISLOGIN, false);
-                    editor.apply();
-                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(getApplicationContext(), response.body().message, Toast.LENGTH_LONG).show();
-                }
+//                if (response.body().code.equals(Integer.valueOf(1))) {
+//                    SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
+//                    SharedPreferences.Editor editor = sharedPreferences.edit();
+//                    editor.putBoolean(LoginActivity.KEY_ISLOGIN, false);
+//                    editor.apply();
+//                    Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+//                    startActivity(intent);
+//                } else {
+//                    Toast.makeText(getApplicationContext(), response.body().message, Toast.LENGTH_LONG).show();
+//                }
 
             }
 
@@ -663,6 +736,12 @@ public class HomeActivity extends BaseActivity
                 Toast.makeText(getApplicationContext(), "Error!", Toast.LENGTH_LONG).show();
             }
         });
+        Log.d("FUCK", "ádasdasdlôngut");
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putBoolean(LoginActivity.KEY_ISLOGIN, false);
+        editor.apply();
+        Intent intent = new Intent(HomeActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -674,11 +753,18 @@ public class HomeActivity extends BaseActivity
 
     @Override
     public void openFragment(BaseFragment fragment, boolean onBackstack) {
-        if (onBackstack) {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack(fragment.toString()).commit();
-        } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+        try{
+            if (onBackstack) {
+                Log.d("OpenFragment", "1");
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).addToBackStack(fragment.toString()).commit();
+            } else {
+                Log.d("OpenFragment", "2");
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, fragment).commit();
+            }
+        } catch (Exception e){
+
         }
+
     }
 
     @Override
@@ -759,6 +845,7 @@ public class HomeActivity extends BaseActivity
     @Subscribe
     public void onEvent(SetBottomBarPosition event) {
         try {
+            naviagtionIsChangeFragment = event.isChangeFragment();
             switch (event.getPosition()) {
                 case 0:
                     bottomNavigation.setCurrentItem(0);
@@ -778,8 +865,24 @@ public class HomeActivity extends BaseActivity
                 default:
                     break;
             }
+            naviagtionIsChangeFragment = true;
         } catch (NullPointerException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void reloadUserLayout() {
+        SharedPreferences sharedPreferences = getSharedPreferences(LoginActivity.LOGIN_SHARE_PREFERENCE, MODE_PRIVATE);
+        String urlImg = sharedPreferences.getString(LoginActivity.KEY_AVATAR, "");
+        String strName = sharedPreferences.getString(LoginActivity.KEY_NAME, "MCBooks");
+        String strEmail = sharedPreferences.getString(LoginActivity.KEY_EMAIL, "email@mcbooks.vn");
+        txtName.setText(strName);
+        txtEmail.setText(strEmail);
+        if (urlImg.equals("")) {
+            Picasso.with(this).load("http://mcbooks.vn/images/blogo.png").transform(new CircleTransform()).into(imgAvatar);
+        } else {
+            Picasso.with(this).load(urlImg).transform(new CircleTransform()).into(imgAvatar);
         }
     }
 }

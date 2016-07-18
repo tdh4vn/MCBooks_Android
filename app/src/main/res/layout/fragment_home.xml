@@ -54,7 +54,7 @@
                             android:layout_marginTop="5dp"
                             android:layout_below="@id/bookHotSeller"
                             android:layout_width="match_parent"
-                            android:layout_height="210dp">
+                            android:layout_height="230dp">
 
                         </android.support.v7.widget.RecyclerView>
                         <!--Sách mới-->
@@ -84,7 +84,7 @@
                             android:layout_marginTop="5dp"
                             android:layout_below="@id/txtBooksNew"
                             android:layout_width="match_parent"
-                            android:layout_height="210dp"/>
+                            android:layout_height="230dp"/>
                         <!--Sách sắp phát hành-->
                         <TextView
                             android:layout_marginTop="5dp"
@@ -112,7 +112,7 @@
                             android:layout_marginTop="5dp"
                             android:layout_below="@id/txtBooksInRelease"
                             android:layout_width="match_parent"
-                            android:layout_height="210dp"/>
+                            android:layout_height="230dp"/>
                         <!--Tin tức-->
                         <TextView
                             android:visibility="gone"

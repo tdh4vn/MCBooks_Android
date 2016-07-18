@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context="vn.mcbooks.mcbooks.fragment.BookDetailFragment">
     <ScrollView
         android:id="@+id/scrollViewBookDetail"
@@ -83,6 +84,7 @@
                     android:layout_marginTop="10dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:singleLine="false"
                     android:text="Tiếng Trung là ngôn ngữ có nhiều người nói nhất trên thế giới, ở Việt Nam đây cũng là một ngôn ngữ có số lượng người học đông đảo và được đưa vào giảng dạy ở bậc phổ thông. Tuy nhiên khó khăn lớn nhất đối với người học tiếng Trung đó là làm quen với chữ cái và từ vựng. Bởi Việt Nam chúng ta sử dụng hệ thống chữ cái khác hắn so với Hán tự của Trung Quốc. Chính vì vậy nhu cầu học chữ và từ vựng tiếng Trung là rất lớn..."
                     android:freezesText="true"/>
                 <Button

@@ -3,6 +3,7 @@ package vn.mcbooks.mcbooks.singleton;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -13,7 +14,9 @@ import retrofit2.Response;
 import vn.mcbooks.mcbooks.activity.HomeActivity;
 import vn.mcbooks.mcbooks.model.Audio;
 import vn.mcbooks.mcbooks.model.Book;
+import vn.mcbooks.mcbooks.model.Category;
 import vn.mcbooks.mcbooks.model.GetMediaFavoriteResult;
+import vn.mcbooks.mcbooks.model.LoginSocialResult;
 import vn.mcbooks.mcbooks.model.Media;
 import vn.mcbooks.mcbooks.model.MediaInBook;
 import vn.mcbooks.mcbooks.model.Result;
@@ -24,11 +27,16 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
 /**
  * Created by hungtran on 6/11/16.
  */
-public class ContentManager {
+public class ContentManager implements Serializable{
     private String token;
     private Result result;
     private UserModel user = new UserModel();
     private static ContentManager ourInstance = new ContentManager();
+
+    List<Category> categories = new ArrayList<>();
+    public static void setOurInstance(ContentManager ourInstance) {
+        ContentManager.ourInstance = ourInstance;
+    }
 
     private ArrayList<Book> listBookFavorite = new ArrayList<>();
 
@@ -200,5 +208,13 @@ public class ContentManager {
     public void resetContent(){
         listBookFavorite = new ArrayList<>();
         listMediaFavorite = new ArrayList<>();
+    }
+
+    public List<Category> getCategories() {
+        return categories;
+    }
+
+    public void setCategories(List<Category> categories) {
+        this.categories = categories;
     }
 }

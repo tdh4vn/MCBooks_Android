@@ -98,7 +98,7 @@ public class HomeFragment extends BaseFragment
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new SetBottomBarPosition(0));
+        EventBus.getDefault().post(new SetBottomBarPosition(0, true));
         IToolBarController toolBarController = (IToolBarController)getActivity();
         toolBarController.setVisibilityForTitles(View.GONE);
         toolBarController.changeTitles("");

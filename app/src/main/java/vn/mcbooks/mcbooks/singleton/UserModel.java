@@ -1,12 +1,15 @@
 package vn.mcbooks.mcbooks.singleton;
 
+import java.io.Serializable;
+
 /**
  * Created by hungtran on 6/22/16.
  */
-public class UserModel {
+public class UserModel implements Serializable{
     private String username;
     private String email;
     private String avatarURL;
+    private String mobilePhone;
 
     public UserModel() {
     }
@@ -15,6 +18,14 @@ public class UserModel {
         this.username = username;
         this.email = email;
         this.avatarURL = avatarURL;
+    }
+
+    public String getMobilePhone() {
+        return mobilePhone;
+    }
+
+    public void setMobilePhone(String mobilePhone) {
+        this.mobilePhone = mobilePhone;
     }
 
     public String getUsername() {

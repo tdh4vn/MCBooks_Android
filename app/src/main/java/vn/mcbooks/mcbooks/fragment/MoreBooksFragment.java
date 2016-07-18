@@ -118,7 +118,7 @@ public class MoreBooksFragment extends BaseFragment{
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new SetBottomBarPosition(0));
+        EventBus.getDefault().post(new SetBottomBarPosition(0, false));
     }
 
     void showDialogLoading(){

@@ -33,8 +33,7 @@ public class FavoriteBooksFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("FBF", "onResume");
-        updateUI();
+
     }
     public void updateUI(){
         bookInHomeAdapter.setListBook(ContentManager.getInstance().getListBookFavorite());
@@ -45,9 +44,13 @@ public class FavoriteBooksFragment extends Fragment {
         recyclerViewBook.addOnItemTouchListener(new RecyclerItemClickListener(getActivity(), recyclerViewBook, new RecyclerItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                BookDetailFragment bookDetailFragment = new BookDetailFragment();
-                bookDetailFragment.setmBook(ContentManager.getInstance().getListBookFavorite().get(position));
+                Log.d("Tag", ""+position);
+                BookDetailFragment bookDetailFragment
+                        = BookDetailFragment.create(ContentManager.getInstance().getListBookFavorite().get(position), getString(R.string.favarite_books));
                 ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
+//                BookDetailFragment bookDetailFragment = new BookDetailFragment();
+//                bookDetailFragment.setmBook(ContentManager.getInstance().getListBookFavorite().get(position));
+//                ((IOpenFragment)getActivity()).openFragment(bookDetailFragment, true);
             }
             @Override
             public void onItemLongClick(View view, int position) {
@@ -62,7 +65,7 @@ public class FavoriteBooksFragment extends Fragment {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_favorite_books, container, false);
         initView(rootView);
-        Log.d("FBF", "onCreate");
+        updateUI();
         return rootView;
     }
 

@@ -1,9 +1,11 @@
 package vn.mcbooks.mcbooks.adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -89,7 +91,7 @@ public class ListMediaAdapter extends BaseAdapter implements View.OnClickListene
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
             convertView = layoutInflater.inflate(R.layout.item_media, null);
@@ -111,6 +113,12 @@ public class ListMediaAdapter extends BaseAdapter implements View.OnClickListene
         Audio media = this.listMedia.get(position);
         holder.txtName.setText(media.getName());
         holder.btnDownload.setTag(media);
+        holder.content.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((IPlayAudio)mContext).moveToAudio(position);
+            }
+        });
         Bundle bundle = new Bundle();
         bundle.putInt("POSITION", position);
         if (ContentManager.getInstance().checkMediaInFavorite(listMedia.get(position).getId())){
@@ -138,18 +146,27 @@ public class ListMediaAdapter extends BaseAdapter implements View.OnClickListene
     }
 
     @Override
-    public void onClick(View v) {
+    public void onClick(final View v) {
         switch (v.getId()){
             case R.id.downloadMedia:
                 if (((Audio)v.getTag()).getLocalURI().equals("null")){
                     downloader.downloadAudio(((Audio)v.getTag()));
                 } else {
-                    Audio media = (Audio)v.getTag();
-                    File file = new File(media.getLocalURI());
-                    if (file.delete()){
-                        ((ImageView)v).setImageResource(R.drawable.ic_file_download_blue_24dp);
-                        media.setLocalURI("null");
-                    }
+                    new AlertDialog.Builder(mContext)
+                            .setTitle("Xóa Audio?")
+                            .setMessage("Bạn có chắc chắn muốn xóa không?")
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int whichButton) {
+                                    if(whichButton  == -1){
+                                        Audio media = (Audio)v.getTag();
+                                        File file = new File(media.getLocalURI());
+                                        if (file.delete()){
+                                            ((ImageView)v).setImageResource(R.drawable.ic_file_download_blue_24dp);
+                                            media.setLocalURI("null");
+                                        }
+                                    }
+                                }})
+                            .setNegativeButton(android.R.string.no, null).show();
                 }
 
                 break;

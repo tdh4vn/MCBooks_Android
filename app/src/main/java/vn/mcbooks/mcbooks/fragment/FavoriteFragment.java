@@ -55,7 +55,7 @@ public class FavoriteFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new SetBottomBarPosition(3));
+        EventBus.getDefault().post(new SetBottomBarPosition(3, true));
         Log.d("FavoriteFragment", "onResume");
         //initView();
         favoriteViewPagerAdapter.notifyDataSetChanged();

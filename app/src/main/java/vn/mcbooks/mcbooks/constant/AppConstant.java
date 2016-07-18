@@ -6,5 +6,6 @@ package vn.mcbooks.mcbooks.constant;
 public class AppConstant {
     // Google Console APIs developer key
     // Replace this key with your's
-    public static final String DEVELOPER_KEY = "AIzaSyAu23UpgZyCmYhm5yZ9qF3vKCWBQRmQM6A";
+    public static final String DEVELOPER_KEY = "AIzaSyCMG8xTo4dYNt_WEdHxCEXuilYc_XRLX_M";
+    public static final String FILE_NAME = "content_mcbooks";
 }

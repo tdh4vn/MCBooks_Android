@@ -24,9 +24,9 @@ public class AwesomeButton extends Button {
     }
 
     private void init() {
-        Typeface typeface =
-                Typeface.createFromAsset(getContext().getAssets(),
-                        "fontawesome_webfont.ttf");
-        setTypeface(typeface);
+//        Typeface typeface =
+//                Typeface.createFromAsset(getContext().getAssets(),
+//                        "fontawesome_webfont.ttf");
+//        setTypeface(typeface);
     }
 }

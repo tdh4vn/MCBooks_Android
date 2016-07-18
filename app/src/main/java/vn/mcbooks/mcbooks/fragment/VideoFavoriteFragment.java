@@ -31,8 +31,9 @@ import vn.mcbooks.mcbooks.utils.StringUtils;
  * A simple {@link Fragment} subclass.
  */
 public class VideoFavoriteFragment extends Fragment {
-
+    public static final String MEDIA_ID = "mediaiddid";
     ListView listView;
+    ListMediaInBookAdapter listMediaInBookAdapter;
     public VideoFavoriteFragment() {
         // Required empty public constructor
     }
@@ -47,15 +48,23 @@ public class VideoFavoriteFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d("onResume", "resume");
+        listMediaInBookAdapter.setListMedia(ContentManager.getInstance().getListVideoFavorite());
+        listMediaInBookAdapter.notifyDataSetChanged();
+    }
+
     private void initView(View view) {
         if (view != null){
             listView = (ListView) view.findViewById(R.id.listVideoFavorite);
-            ListMediaInBookAdapter listMediaInBookAdapter = new ListMediaInBookAdapter(
+            listMediaInBookAdapter = new ListMediaInBookAdapter(
                     ContentManager.getInstance().getListVideoFavorite(), getActivity());
             listView.setAdapter(listMediaInBookAdapter);
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                     try{
                         MediaInBook mediaInBook = ContentManager.getInstance().getListVideoFavorite().get(position);
                         GetBookService getBookService = ServiceFactory.getInstance().createService(GetBookService.class);
@@ -66,8 +75,13 @@ public class VideoFavoriteFragment extends Fragment {
                                 if (response.body().getCode() != 1){
                                     Toast.makeText(getActivity(),response.body().getMessage(), Toast.LENGTH_LONG).show();
                                 } else {
+//                                    Intent intent = new Intent(getActivity(), AudioPlayerActivity.class);
+//                                    intent.putExtra(BookDetailFragment.BOOK, response.body().getResult());
+//                                    intent.putExtra(MEDIA, listMediaInBookAdapter.getItem(position).getId());
+//                                    startActivity(intent);
                                     Bundle bundle = new Bundle();
                                     bundle.putSerializable(YoutubePlayerActivity.BOOK_KEY, response.body().getResult());
+                                    bundle.putString(MEDIA_ID, listMediaInBookAdapter.getItem(position).getId());
                                     ((BaseActivity)getActivity()).openActivity(YoutubePlayerActivity.class, bundle);
                                 }
                             }

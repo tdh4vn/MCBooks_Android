@@ -23,16 +23,21 @@ import java.util.List;
 import vn.mcbooks.mcbooks.R;
 import vn.mcbooks.mcbooks.adapter.ListVideoAdapter;
 import vn.mcbooks.mcbooks.constant.AppConstant;
+import vn.mcbooks.mcbooks.fragment.VideoFavoriteFragment;
+import vn.mcbooks.mcbooks.intef.IOpenVideo;
+import vn.mcbooks.mcbooks.model.Audio;
 import vn.mcbooks.mcbooks.model.Book;
 import vn.mcbooks.mcbooks.model.Media;
 import vn.mcbooks.mcbooks.model.Video;
+import vn.mcbooks.mcbooks.network_api.APIURL;
 
 public class YoutubePlayerActivity extends YouTubeBaseActivity implements
-        YouTubePlayer.OnInitializedListener{
+        YouTubePlayer.OnInitializedListener,IOpenVideo{
     static
     {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
     }
+    ListVideoAdapter listVideoAdapter;
     public static final String BOOK_KEY = "BOOK";
     private int index = 0;
     private boolean isFullScreen = false;
@@ -51,7 +56,6 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         youTubePlayerView = (YouTubePlayerView)findViewById(R.id.youtube_view);
         youTubePlayerView.initialize(AppConstant.DEVELOPER_KEY, this);
         TextView txtTitle = (TextView)findViewById(R.id.titleYoutube);
-
         btnBack = (ImageButton)findViewById(R.id.btn_home);
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,19 +65,25 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
         });
         listVideo = (ListView)findViewById(R.id.listVideos);
         mBook = (Book)getIntent().getExtras().getSerializable(BOOK_KEY);
+        String id = getIntent().getExtras().getString(VideoFavoriteFragment.MEDIA_ID);
         txtTitle.setText(mBook.getName());
         createListVideo();
-        ListVideoAdapter listVideoAdapter = new ListVideoAdapter(videoList, this);
-        listVideo.setAdapter(listVideoAdapter);
-        listVideo.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                openVideo(videoList.get(position).getId());
-                index = position;
-                ((ListVideoAdapter)listVideo.getAdapter()).setIndexPlay(index);
-                ((ListVideoAdapter)listVideo.getAdapter()).notifyDataSetChanged();
+        for (int i = 0; i < videoList.size(); i++){
+            if (videoList.get(i).getIdInServer().equals(id)){
+                Log.d("absdsd", i + "");
+                index = i;
             }
-        });
+        }
+        listVideoAdapter = new ListVideoAdapter(videoList, this);
+        listVideoAdapter.setIndexPlay(index);
+        listVideo.setAdapter(listVideoAdapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        createListVideo();
+        listVideoAdapter.notifyDataSetChanged();
     }
 
     void createListVideo(){
@@ -83,18 +93,24 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
                 video.setIdInServer(media.getId());
                 video.setUrl(media.getUrl());
                 video.setName(media.getName());
-                Log.d("HUNG",video.getUrl().split("v=").length + "");
                 String id = video.getUrl().split("v=")[1];
-                Log.d("HungTD2222", id);
+                boolean check = false;
                 video.setId(id);
-                videoList.add(video);
+                for (Video v : videoList){
+                    if (v.getIdInServer().equals(media.getId())){
+                        check = true;
+                        break;
+                    }
+                }
+                if (check == false){
+                    videoList.add(video);
+                }
             }
         }
     }
 
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
-
             this.youTubePlayer = youTubePlayer;
             this.youTubePlayer.setOnFullscreenListener(new YouTubePlayer.OnFullscreenListener() {
                 @Override
@@ -103,6 +119,7 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
                     Log.d("ABC",  String.valueOf(isFullScreen));
                 }
             });
+            Log.d("videoss", index + "");
             openVideo(videoList.get(index).getId());
 
     }
@@ -146,5 +163,14 @@ public class YoutubePlayerActivity extends YouTubeBaseActivity implements
 
     private void openVideo(String id){
         youTubePlayer.cueVideo(id);
+    }
+
+    @Override
+    public void openVideo(int postion) {
+        openVideo(videoList.get(postion).getId());
+        index = postion;
+        Log.d("Video", index + " ++ " + videoList.get(postion).getId());
+        ((ListVideoAdapter)listVideo.getAdapter()).setIndexPlay(index);
+        ((ListVideoAdapter)listVideo.getAdapter()).notifyDataSetChanged();
     }
 }

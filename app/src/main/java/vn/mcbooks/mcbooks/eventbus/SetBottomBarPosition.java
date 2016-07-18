@@ -5,8 +5,10 @@ package vn.mcbooks.mcbooks.eventbus;
  */
 public class SetBottomBarPosition {
     private int position;
+    private boolean isChangeFragment;
 
-    public SetBottomBarPosition(int position) {
+    public SetBottomBarPosition(int position, boolean isChangeFragment) {
+        this.isChangeFragment = isChangeFragment;
         this.position = position;
     }
 
@@ -16,5 +18,13 @@ public class SetBottomBarPosition {
 
     public void setPosition(int position) {
         this.position = position;
+    }
+
+    public boolean isChangeFragment() {
+        return isChangeFragment;
+    }
+
+    public void setChangeFragment(boolean changeFragment) {
+        isChangeFragment = changeFragment;
     }
 }

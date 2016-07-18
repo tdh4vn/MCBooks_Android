@@ -84,13 +84,12 @@ public class QRCodeFragment extends BaseFragment {
         progressDialogScaning = new ProgressDialog(getActivity());
         progressDialogScaning.setTitle("Đang quét thông tin sách");
         progressDialogScaning.setMessage("Đang quét thông tin sách");
-        progressDialogScaning.setCancelable(false);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        EventBus.getDefault().post(new SetBottomBarPosition(2));
+        EventBus.getDefault().post(new SetBottomBarPosition(2, true));
 //        IBottomNavigationController bottomNavigationController = (IBottomNavigationController) getActivity();
 //        bottomNavigationController.setCurrentOfBottomNavigation(2);
         buildBarcodeDetector();
@@ -184,14 +183,13 @@ public class QRCodeFragment extends BaseFragment {
                     Log.d("Khong ro", response.body().getCode() + "");
                     progressDialogScaning.dismiss();
                     isResultBarcode = false;
-                    showToast(response.body().getMessage(), Toast.LENGTH_LONG);
+                    showToast(response.body().getMessage(), Toast.LENGTH_SHORT);
                 }
             }
 
             @Override
             public void onFailure(Call<GetBookByIDResult> call, Throwable t) {
                 progressDialogScaning.setMessage("Không tìm thấy sách");
-                progressDialogScaning.setCancelable(false);
                 isResultBarcode = false;
             }
         });

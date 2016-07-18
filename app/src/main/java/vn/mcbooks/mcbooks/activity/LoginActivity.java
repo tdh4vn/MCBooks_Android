@@ -71,6 +71,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     public static String KEY_EMAIL = "KEY_EMAIL";
     public static String KEY_AVATAR = "KEY_AVATAR";
     public static String KEY_NAME = "KEY_NAME";
+    public static String KEY_PHONE = "KEY_PHONE";
     public static String KEY_ISLOGIN = "IS_LOGIN";
     public static String KEY_TOKEN = "KEY_TOKEN";
     public static String KEY_LOGIN_TYPE = "KEY_LOGIN_TYPE";
@@ -92,6 +93,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
     @Override
     protected void onStart() {
         super.onStart();
+        //printHashKey();
         loginResultData = new Result();
         boolean isLogin = getSharedPreferences(LOGIN_SHARE_PREFERENCE, MODE_PRIVATE).getBoolean(KEY_ISLOGIN, false);
         if (isLogin){
@@ -170,7 +172,6 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
                         new GraphRequest.GraphJSONObjectCallback() {
                             @Override
                             public void onCompleted(JSONObject object, GraphResponse response) {
-                                Log.v("LoginActivity", response.toString());
                                 // Application code
                                 try {
                                     //Log.d("HungTD", object.getString("user_mobile_phone") + " - " + object.getString("user_address"));
@@ -338,6 +339,7 @@ public class LoginActivity extends BaseActivity implements GoogleApiClient.OnCon
         }
     }
     private void handleSignInResult(GoogleSignInResult result) {
+        Log.d("MyTAG", "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
             if (acct.getPhotoUrl() != null){

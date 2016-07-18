@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">MCBooks</string>
-    <string name="facebook_app_id">1308982119130451</string>
+    <string name="facebook_app_id">202695483461195</string>
     <string name="title_activity_home">HomeActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
@@ -15,8 +15,6 @@
     <string name="title_activity_media_player">MediaPlayerActivity</string>
     <string name="title_logo">NATIONAL GEOGRAPHIC</string>
     <string name="btn_skip_intro">Skip Intro</string>
-
-
     <string name="error_player">There was an error initializing the YouTubePlayer (%1$s)</string>
     <string name="title_activity_show_image">Images</string>
     <string name="section_format">Hello World from section: %1$d</string>
@@ -27,6 +25,7 @@
     <string name="myaccount">Thông tin</string>
     <string name="news_book_titles">Sách mới</string>
     <string name="coming_books">Sách sắp phát hành</string>
+    <string name="favarite_books">Sách yêu thích</string>
     <string name="hot_books_titles">Sách bán chạy</string>
     <string name="star_0">&#xf006;&#xf006;&#xf006;&#xf006;&#xf006;</string>
     <string name="star_1">&#xF005;&#xf006;&#xf006;&#xf006;&#xf006;</string>
@@ -44,5 +43,8 @@
     <string name="title_activity_no_network">MCBooks</string>
     <string name="gift_icon">&#xf06b;</string>
     <string name="buy_book">MUA SÁCH</string>
+    <string name="change_avatar_string">Thay đổi ảnh đại diện</string>
+    <string name="uploading_avatar">Đang tải lên...</string>
+    <string name="downloading_file">Đang tải file...</string>
 
 </resources>

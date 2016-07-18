@@ -3,10 +3,12 @@ package vn.mcbooks.mcbooks.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
+
 /**
  * Created by hungtran on 6/18/16.
  */
-public class MediaInBook {
+public class MediaInBook implements Serializable{
 
     @SerializedName("id")
     @Expose

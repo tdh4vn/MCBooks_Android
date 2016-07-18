@@ -11,9 +11,12 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -34,6 +37,7 @@ public class SearchActivity extends AppCompatActivity
     ListView listView;
     boolean isReadySearch = true;
     SearchServices searchServices;
+    ProgressBar progressBarLoading;
     int page = 1;
 
     @Override
@@ -47,6 +51,7 @@ public class SearchActivity extends AppCompatActivity
         if(btnBack != null){
             btnBack.setOnClickListener(this);
         }
+        progressBarLoading = (ProgressBar) this.findViewById(R.id.progress_loading);
         txtSearchBar = (EditText)this.findViewById(R.id.text_search_bar);
         listView = (ListView) this.findViewById(R.id.listResult);
         searchServices = ServiceFactory.getInstance().createService(SearchServices.class);
@@ -59,12 +64,7 @@ public class SearchActivity extends AppCompatActivity
                 SearchActivity.this.finish();
             }
         });
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        page = 1;
+        txtSearchBar.requestFocus();
         txtSearchBar.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -73,51 +73,77 @@ public class SearchActivity extends AppCompatActivity
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (isReadySearch){
-                    if (searchServices  == null){
-                        searchServices = ServiceFactory.getInstance().createService(SearchServices.class);
-                    } else {
-                        SearchActivity.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Call<SearchResult> getBookResultCall;
-                                if (txtSearchBar.getText().toString().equals("") || txtSearchBar.getText().toString() == null ){
-                                    Log.d("Search", "asdasd");
-                                    getBookResultCall
-                                            = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, "null_rong");
-                                } else {
-                                    getBookResultCall
-                                            = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, txtSearchBar.getText().toString());
-                                }
-                                getBookResultCall.enqueue(new Callback<SearchResult>() {
-                                    @Override
-                                    public void onResponse(Call<SearchResult> call, Response<SearchResult> response) {
-                                        if (response.body().getCode() == 1){
-                                            ListBookHorizontalAdapter listBookSearchResultAdapter
-                                                    = new ListBookHorizontalAdapter((ArrayList<Book>) response.body().getResult().getBooks(), SearchActivity.this);
-                                            listView.setAdapter(listBookSearchResultAdapter);
-                                        } else {
-                                            Toast.makeText(SearchActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
-                                        }
-                                    }
 
-                                    @Override
-                                    public void onFailure(Call<SearchResult> call, Throwable t) {
-                                        Toast.makeText(SearchActivity.this, "Có lỗi xảy ra! Vui lòng kiểm tra kết nối mạng hoặc đăng nhập lại", Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                            }
-                        });
-
-                    }
-                }
             }
-
+            private Timer timer=new Timer();
+            private final long DELAY = 500; // milliseconds
             @Override
             public void afterTextChanged(Editable s) {
+                timer.cancel();
+                timer = new Timer();
+                timer.schedule(
+                        new TimerTask() {
+                            @Override
+                            public void run() {
+                                if (isReadySearch){
+                                    if (searchServices  == null){
+                                        searchServices = ServiceFactory.getInstance().createService(SearchServices.class);
+                                    } else {
+//                                        if (progressBarLoading.getVisibility() == View.GONE){
+//                                            progressBarLoading.setVisibility(View.VISIBLE);
+//                                        }
+//                                        SearchActivity.this.runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+                                        Call<SearchResult> getBookResultCall;
+                                        if (txtSearchBar.getText().toString().equals("") || txtSearchBar.getText().toString() == null ){
+                                            getBookResultCall
+                                                    = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, "");
+                                        } else {
+                                            getBookResultCall
+                                                    = searchServices.searchBook(StringUtils.tokenBuild(ContentManager.getInstance().getToken()), page, txtSearchBar.getText().toString());
+                                        }
+                                        getBookResultCall.enqueue(new Callback<SearchResult>() {
+                                            @Override
+                                            public void onResponse(Call<SearchResult> call, Response<SearchResult> response) {
+                                                if (progressBarLoading.getVisibility() == View.VISIBLE){
+                                                    progressBarLoading.setVisibility(View.GONE);
+                                                }
+                                                if (response.body().getCode() == 1){
+                                                    ListBookHorizontalAdapter listBookSearchResultAdapter
+                                                            = new ListBookHorizontalAdapter((ArrayList<Book>) response.body().getResult().getBooks(), SearchActivity.this);
+                                                    listView.setAdapter(listBookSearchResultAdapter);
+                                                } else {
+                                                    Toast.makeText(SearchActivity.this, response.body().getMessage(), Toast.LENGTH_LONG).show();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void onFailure(Call<SearchResult> call, Throwable t) {
+//                                                        if (progressBarLoading.getVisibility() == View.VISIBLE){
+//                                                            progressBarLoading.setVisibility(View.GONE);
+//                                                        }
+                                                //Toast.makeText(SearchActivity.this, "Có lỗi xảy ra! Vui lòng kiểm tra kết nối mạng hoặc đăng nhập lại", Toast.LENGTH_LONG).show();
+//                                                    }
+//                                                });
+                                            }
+                                        });
+                                    }
+                                }//end if
+                            }
+                        },
+                        DELAY
+                );
 
             }
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        page = 1;
+
     }
 
     @Override

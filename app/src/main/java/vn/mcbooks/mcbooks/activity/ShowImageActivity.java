@@ -166,7 +166,13 @@ public class ShowImageActivity extends Activity {
 
         @Override
         protected void onPostExecute(Bitmap result) {
-            imageView.setImage(ImageSource.bitmap(result));
+            try {
+                imageView.setImage(ImageSource.bitmap(result));
+            } catch (Exception e){
+
+            }
+
+
         }
 
         private Bitmap download_Image(String url) {
